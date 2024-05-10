@@ -5,6 +5,7 @@ import TheFooter from "@/components/layout/TheFooter.vue";
 </script>
 
 <template>
+  <link href="https://webfontworld.github.io/goodchoice/Jalnan.css" rel="stylesheet" />
   <div class="wrapper">
     <TheHeadingNavbar />
     <RouterView />
