@@ -50,6 +50,9 @@ const user = ref(null);
       >
         <div class="offcanvas-body ms-5">
           <ul class="navbar-nav flex-grow-1 justify-content-between">
+            <li class="nav-item ms-auto">
+              <router-link class="nav-link" to="/post">게시판</router-link>
+            </li>
             <template v-if="user">
               <li class="nav-item ms-auto">
                 <router-link class="nav-link" to="/user/mypage">내 정보</router-link>
