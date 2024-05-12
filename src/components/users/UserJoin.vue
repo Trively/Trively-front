@@ -5,9 +5,6 @@ import axios from "axios"
 
 const { VITE_USER_BASE_URL } = import.meta.env
 
-// import { useMemberStore } from "@/stores/member";
-// import { findById } from "@/api/user";
-
 const router = useRouter();
 
 const id = ref('')
@@ -15,84 +12,37 @@ const password = ref('')
 const email = ref('')
 const nickname = ref('')
 
+const successModal = ref(false); // 모달 표시 상태 변수
+const errorModal = ref(false); // 항목 미입력 모달 표시 상태 변수
+
 const userRegist = () => {
+    // 입력 필드가 비어 있는지 확인
+    if (!id.value || !password.value || !email.value || !nickname.value) {
+        errorModal.value = true; // 에러 모달 표시
+        return; // 회원가입 함수 종료
+    }
     axios.post("http://localhost:80/api/member", { id: id.value, password: password.value, email: email.value, nickname: nickname.value })
         .then(response => {
-            router.push({name:'login'})
+            successModal.value = true; // 회원가입 성공 시 상태 변수 설정
         })
         .catch(error => {
         console.log('Error 발생: ', error)
     })
 }
-// const memberStore = useMemberStore();
 
-// const { userRegist } = memberStore;
-
-// const registInfo = ref({
-//     id: "",
-//     password: "",
-//     passwordCk: "",
-//     name: "",
-//     email: "",
-//     phone: "",
-//     birth: ""
-// });
-
-// const passwordMismatch = ref(false);
-// const isExistingId = ref(false);
-
-// const regist = async () => {
-//     // 비밀번호와 비밀번호 확인이 일치하는지 확인
-//     if (passwordMismatch.value) {
-//         alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
-//         return;
-//     }
-
-//     await userRegist(registInfo.value);
-//     router.push('/user/login');
-// };
-
-// // 비밀번호와 비밀번호 확인이 일치하는지 실시간으로 확인
-// const checkPasswordMatch = () => {
-//     passwordMismatch.value = registInfo.value.password !== registInfo.value.passwordCk;
-// };
-
-// const isFormValid = () => {
-//     return Object.values(registInfo.value).every(value => value.trim());
-// };
-
-// const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-// const isEmailValid = () => {
-//     return emailRegex.test(registInfo.value.email);
-// };
-
-// // 아이디 중복 확인 함수
-// const checkExistingId = async () => {
-
-//     if (!registInfo.value.id) {
-//         isExistingId.value = true;
-//         return;
-//     }
-//     // findById 함수 호출
-//     await findById(registInfo.value.id,
-//         ({ data }) => {
-//             // 아이디가 존재하지 않을 경우
-//             if (data) {
-//                 isExistingId.value = true;
-//             }
-//             else {
-//                 isExistingId.value = false;
-//             }
-//         },
-//         (error) => {
-
-//         }
-//     );
-// };
+const closeModal = (modalType) => {
+    if (modalType === 'error') {
+        errorModal.value = false; // 에러 모달 닫기
+    } else if (modalType === 'success') {
+        successModal.value = false; // 회원가입 성공 모달 닫기
+        router.push({ name: 'login' }); // 로그인 페이지로 리다이렉트
+    }
+}
 
 </script>
 
 <template>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
     <div class="main">
         <form>
             <div class="logo-container">
@@ -122,8 +72,30 @@ const userRegist = () => {
             </div>
 
             <button type="button" @click="userRegist" class="btn w-100 py-2">회원가입</button>
+            <!-- 에러 모달 -->
+            <div class="modal" :class="{ 'is-active': errorModal }">
+                <div class="modal-background" @click="()=>closeModal('error')"></div>
+                <div class="modal-content">
+                    <div class="box">
+                        <p>항목을 모두 입력하세요.</p>
+                    </div>
+                </div>
+                <button class="modal-close is-large" aria-label="close" @click="()=>closeModal('error')"></button>
+            </div>
 
         </form>
+
+        <!-- 모달 -->
+        <div class="modal" :class="{ 'is-active': successModal }">
+            <div class="modal-background" @click="()=>closeModal('success')"></div>
+            <div class="modal-content">
+                <div class="box">
+                    <p>회원가입에 성공하셨습니다.</p>
+                </div>
+            </div>
+            <button class="modal-close is-large" aria-label="close" @click="()=>closeModal('success')"></button>
+        </div>
+
     </div>
 </template>
 

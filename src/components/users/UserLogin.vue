@@ -92,6 +92,7 @@ form {
     color: white;
 }
 .buttons{
+    margin-bottom: 30px;
     display: flex;
     flex-direction: column;
 }
