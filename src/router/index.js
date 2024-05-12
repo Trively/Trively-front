@@ -48,7 +48,7 @@ const router = createRouter({
         },
       ],
     },
-
+      {
       path: '/user',
       name: 'user',
       component: TheUserView,
