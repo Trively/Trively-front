@@ -28,6 +28,10 @@ const moveWrite = () => {
   router.push({ name: "postWrite" });
 };
 
+const moveDetail = (postId) => {
+  router.push({ name: "postDetail", params: { postId: postId.toString() } });
+}
+
 onMounted(() => {
   listPosts();
 });
@@ -49,24 +53,10 @@ onMounted(() => {
           <div class="col-lg-10">
             <div class="row align-self-center mb-2">
               <div class="col-md-2 text-start">
-                <button type="button" class="btn btn-outline-primary btn-sm" @click="moveWrite">
+                <button type="button" class="btn btn-success btn-sm" @click="moveWrite">
                   글쓰기
                 </button>
               </div>
-              <!-- <div class="col-md-5 offset-5">
-                <form class="d-flex">
-                  <VSelect :selectOption="selectOption" @onKeySelect="changeKey" />
-                  <div class="input-group input-group-sm">
-                    <input
-                      type="text"
-                      class="form-control"
-                      v-model="param.word"
-                      placeholder="검색어..."
-                    />
-                    <button class="btn btn-dark" type="button" @click="getArticleList">검색</button>
-                  </div>
-                </form>
-              </div> -->
             </div>
             <table class="table table-hover">
               <thead>
@@ -80,15 +70,10 @@ onMounted(() => {
                 </tr>
               </thead>
               <tbody>
-                <PostListItem v-for="post in posts" :key="post.postId" :post="post"></PostListItem>
+                <PostListItem v-for="post in posts" :key="post.postId" :post="post" @click="moveDetail(post.postId)"></PostListItem>
               </tbody>
             </table>
           </div>
-          <!-- <PageNavigation
-            :current-page="currentPage"
-            :total-page="totalPage"
-            @pageChange="onPageChange"
-          ></PageNavigation> -->
         </div>
       </div>
     </div>

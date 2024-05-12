@@ -8,6 +8,7 @@ const { VITE_POST_BASE_URL } = import.meta.env;
 const router = useRouter();
 const route = useRoute();
 const props = defineProps({ type: String });
+const postId = ref(route.params.postId)
 
 const post = ref({
   title: "",
@@ -18,6 +19,19 @@ const post = ref({
 const subjectErrMsg = ref("");
 const contentErrMsg = ref("");
 const selectedBoardErrMsg = ref("");
+
+// 카테고리 선택 검증
+watch(
+  () => post.value.boardName,
+  (value) => {
+    if (!value || value === null) {
+      selectedBoardErrMsg.value = "카테고리를 선택해 주세요!!!";
+    } else {
+      selectedBoardErrMsg.value = "";
+    }
+  },
+  { immediate: true }
+);
 
 // 제목 길이 검증
 watch(
@@ -43,20 +57,22 @@ watch(
   { immediate: true }
 );
 
-// 카테고리 선택 검증
-watch(
-  () => post.value.boardName,
-  (value) => {
-    if (!value || value === null) {
-      selectedBoardErrMsg.value = "카테고리를 선택해 주세요!!!";
-    } else {
-      selectedBoardErrMsg.value = "";
-    }
-  }
-);
+const getPost = () => {
+  axios
+    .get(`${VITE_POST_BASE_URL}/${postId.value}`)
+    .then((response) => {
+      post.value = response.data.data.post;
+    })
+    .catch((error) => {
+      console.error("검색 중 오류 발생:", error);
+    });
+};
 
+
+/**
+ * 카테고리
+ */
 const boards = ref([]);
-const selectedBoard = ref(null);
 
 const ListBoards = () => {
   axios
@@ -70,12 +86,14 @@ const ListBoards = () => {
 };
 
 const onSubmit = () => {
-  if (subjectErrMsg.value) {
+  if(selectedBoardErrMsg.value){
+    alert(selectedBoardErrMsg.value);
+  }else if (subjectErrMsg.value) {
     alert(subjectErrMsg.value);
   } else if (contentErrMsg.value) {
     alert(contentErrMsg.value);
   } else {
-    props.type === "regist" ? writeArticle() : "";
+    props.type === "regist" ? writeArticle() : writeArticle();
   }
 };
 
@@ -84,7 +102,7 @@ const writeArticle = () => {
     .post(VITE_POST_BASE_URL, {
       title: post.value.title,
       content: post.value.content,
-      boardName: selectedBoard.value.boardName,
+      boardName: post.value.boardName,
     })
     .then(() => {
       moveList();
@@ -100,6 +118,11 @@ const moveList = () => {
 
 onMounted(() => {
   ListBoards();
+
+  // postId 값이 있을 때 getPost 함수 호출
+  if (postId.value) {
+    getPost();
+  }
 });
 </script>
 
@@ -117,9 +140,9 @@ onMounted(() => {
     </div> -->
     <div class="mb-3">
       <label for="board" class="form-label">카테고리 선택:</label>
-      <select class="form-select" v-model="selectedBoard">
+      <select class="form-select" v-model="post.boardName">
         <option disabled value="">카테고리 선택</option>
-        <option v-for="board in boards" :key="board.boardId" :value="post.boardName">
+        <option v-for="board in boards" :key="board.boardId" :value="board.boardName">
           {{ board.boardName }}
         </option>
       </select>
@@ -148,16 +171,15 @@ onMounted(() => {
     <div class="col-auto text-center">
       <button
         type="submit"
-        class="btn btn-outline-primary mb-3"
+        class="btn btn-primary mb-3"
         v-if="type === 'regist'"
-        @click="writeArticle"
       >
         글작성
       </button>
-      <!-- <button type="submit" class="btn btn-outline-success mb-3" v-else @click="updateArticle">
+      <button type="submit" class="btn btn-success mb-3" v-else>
         글수정
-      </button> -->
-      <button type="button" class="btn btn-outline-danger mb-3 ms-1" @click="moveList">
+      </button>
+      <button type="button" class="btn btn-secondary mb-3 ms-1" @click="moveList">
         목록으로이동...
       </button>
     </div>
