@@ -25,21 +25,37 @@ const ListAreas = () => {
 
 const searchTrips = () => {
   axios
-    .get(`http://localhost:80/api/attraction`, {
+    .get(`http://localhost:80/api/attraction?typeIds=${selectedTypes.value}`, {
       params: {
         sidoCode: searchArea.value,
-        typeIds: selectedTypes.value,
         search: searchKeyword.value,
         lastAttractId: attractionId.value,
       },
     })
     .then((response) => {
-      console.log(response.data.data.attractions);
-      tripList.value = response.data.data.attractions;
+      // tripList.value=response.data.data.attractions;
+      // tripList.value.push(response.data.data.attractions);
+      Array.prototype.push.apply(tripList.value, response.data.data.attractions);
     })
     .catch((error) => {
       console.error("요청 중 오류 발생: ", error);
     });
+};
+
+const handleNotificationListScroll = (e) => {
+  const { scrollHeight, scrollTop, clientHeight } = e.target;
+  const isAtTheBottom = scrollHeight === scrollTop + clientHeight;
+  // 일정 이상 밑으로 내려오면 함수 실행, 반복 호출을 막기위해 1초마다 스크롤 감지 후 실행
+  if (isAtTheBottom) {
+    setTimeout(() => handleLoadMore(), 500);
+  }
+};
+
+// 내려오면 api 호출하여 리스트 아래에 더 추가
+const handleLoadMore = () => {
+  console.log("리스트 추가!");
+  attractionId.value = tripList.value[tripList.value.length - 1].attractionId;
+  searchTrips();
 };
 
 onMounted(() => {
@@ -49,7 +65,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
+  <div class="list" @scroll="handleNotificationListScroll">
     <div class="col-10 mx-auto">
       <div class="display-6 mb-4 text-center" role="alert"><h3>전국 관광지 정보</h3></div>
       <form class="d-flex" @submit.prevent="searchTrips" role="search">
@@ -157,15 +173,15 @@ onMounted(() => {
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="trip in tripList"
-              :key="trip.attractionId"
-              @click="moveCenter(trip.latitude, trip.longitude)"
-            >
-              <td><img :src="trip.image1 || '../images/basic.png'" width="100px" /></td>
-              <td>{{ trip.name }}</td>
-              <td>{{ trip.address }} {{ trip.addr2 }}</td>
-            </tr>
+              <tr
+                v-for="trip in tripList"
+                :key="trip.attractionId"
+                @click="moveCenter(trip.latitude, trip.longitude)"
+              >
+                <td><img :src="trip.image1 || '/src/assets/logo.png'" width="100px" /></td>
+                <td>{{ trip.name }}</td>
+                <td>{{ trip.address }} {{ trip.addr2 }}</td>
+              </tr>
           </tbody>
         </table>
       </div>
@@ -173,4 +189,9 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.list{
+  height: calc(100vh - 70px);
+  overflow: auto;
+}
+</style>
