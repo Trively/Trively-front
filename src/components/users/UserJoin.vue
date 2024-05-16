@@ -3,7 +3,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios"
 
-const { VITE_USER_BASE_URL } = import.meta.env
+const { VITE_MEMBER_BASE_URL } = import.meta.env
 
 const router = useRouter();
 

@@ -67,7 +67,7 @@ const user = ref(null);
             <template v-else>
               <li class="nav-item ms-auto">&nbsp;&nbsp;&nbsp;&nbsp;</li>
               <li class="nav-item ms-auto">
-                <router-link class="nav-link" to="/user/login">로그인</router-link>
+                <router-link class="nav-link" to="/login">로그인</router-link>
               </li>
             </template>
           </ul>

@@ -3,7 +3,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios"
 
-const { VITE_USER_BASE_URL } = import.meta.env
+const { VITE_MEMBER_BASE_URL } = import.meta.env
 const router = useRouter()
 
 const goToUserJoin = () => {
@@ -15,14 +15,46 @@ const password = ref('')
 
 
 const getLogin = () => {
-    axios.post("http://localhost:80/api/member/login", { id: id.value, password: password.value })
+    axios.post("http://localhost/login", { id: id.value, password: password.value })
         .then(response => {
+            const token = response.data.accessToken;
+            //토큰을 localStorage에 저장
+            localStorage.setItem('accessToken', token);
             router.push({name: 'home'})
         })
         .catch(error => {
         console.log('Error 발생: ', error);
     })
 }
+// axios 인터셉터 설정하여 이후 요청에 토큰 포함
+axios.interceptors.request.use(config => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+        // 토큰이 만료되었는지 확인
+        if (isTokenExpired(token)) {
+            // 토큰이 만료되었으면 로그아웃 처리
+            localStorage.removeItem('accessToken');
+            router.push({ name: 'login' });
+        } else {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+    }
+    return config;
+}, error => {
+    return Promise.reject(error);
+});
+
+// axios 응답 인터셉터 설정하여 401 에러 처리
+axios.interceptors.response.use(response => {
+    return response;
+}, error => {
+    if (error.response.status === 401) {
+        // 401 에러 발생 시 로그아웃 처리
+        localStorage.removeItem('accessToken');
+        router.push({ name: 'login' });
+    }
+    return Promise.reject(error);
+});
 </script>
 
 <template>
