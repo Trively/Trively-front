@@ -10,6 +10,7 @@ import PostModify from '@/components/post/PostModify.vue'
 import TheUserView from "@/views/TheUserView.vue"
 import UserLogin from "@/components/users/UserLogin.vue"
 import UserJoin from "@/components/users/UserJoin.vue"
+import MapView from "@/views/MapView.vue"
 
 
 const router = createRouter({
@@ -65,6 +66,11 @@ const router = createRouter({
         }
       ]
 
+    }, 
+    {
+      path: "/map",
+      name: "map",
+      component: MapView
     }
 
   ]
