@@ -15,7 +15,7 @@ const password = ref('')
 
 
 const getLogin = () => {
-    axios.post("http://localhost/login", { id: id.value, password: password.value })
+    axios.post("http://localhost/api/member/login", { id: id.value, password: password.value })
         .then(response => {
             const token = response.data.accessToken;
             //토큰을 localStorage에 저장

@@ -1,9 +1,16 @@
 <script setup>
 import { ref } from "vue";
+import { useMenuStore } from "@/stores/menu";
+import { useMemberStore } from "@/stores/member";
+import { storeToRefs } from "pinia";
 // import { useRoute } from "vue-router";
 
 const user = ref(null);
+const menuStore = useMenuStore();
+const memberStore = useMemberStore();
 
+const { menuList } = storeToRefs(menuStore);
+const { changeMenuState } = menuStore;
 // Logic to check if user is logged in or not
 // Example:
 // if (someCondition) {
@@ -50,7 +57,25 @@ const user = ref(null);
       >
         <div class="offcanvas-body ms-5">
           <ul class="navbar-nav flex-grow-1 justify-content-between">
-            <li class="nav-item ms-auto">
+            <template v-for="menu in menuList" :key="menu.routeName">
+              <template v-if="menu.show">
+                <template v-if="menu.routeName === 'logout'">
+                  <li class="nav-item">
+                  <router-link to="/" @click.prevent="logout" class="nav-link">{{
+                    menu.name
+                  }}</router-link>
+                </li>
+                </template>
+                <template v-else>
+                <li class="nav-item">
+                  <router-link :to="{ name: menu.routeName }" class="nav-link">{{
+                    menu.name
+                  }}</router-link>
+                </li>
+              </template>
+              </template>
+            </template>
+            <!-- <li class="nav-item ms-auto">
               <router-link class="nav-link" to="/post">게시판</router-link>
             </li>
             <template v-if="user">
@@ -67,9 +92,9 @@ const user = ref(null);
             <template v-else>
               <li class="nav-item ms-auto">&nbsp;&nbsp;&nbsp;&nbsp;</li>
               <li class="nav-item ms-auto">
-                <router-link class="nav-link" to="/login">로그인</router-link>
+                <router-link class="nav-link" to="/member/login">로그인</router-link>
               </li>
-            </template>
+            </template> -->
           </ul>
         </div>
       </div>

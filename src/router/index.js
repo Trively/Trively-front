@@ -21,12 +21,6 @@ const router = createRouter({
       component: HomeView
     },
     {
-      path: "/login",
-      name: "login",
-      component: UserLogin
-    },
-
-    {
 
       path: '/post',
       name: 'post',
@@ -60,10 +54,15 @@ const router = createRouter({
       component: TheUserView,
       children: [
         {
-          path: "",
+          path: "join",
           name: "join",
           component: UserJoin
-        }
+        },
+        {
+          path: "login",
+          name: "login",
+          component: UserLogin
+        },
       ]
 
     }
