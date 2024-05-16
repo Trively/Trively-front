@@ -57,50 +57,48 @@ export const useMemberStore = defineStore("memberStore", () => {
           error.response.statusText
         )
         isValidToken.value = false
-
-        await tokenRegenerate()
       }
     )
   }
 
-  const tokenRegenerate = async () => {
-    await tokenRegeneration(
-      JSON.stringify(userInfo.value),
-      (response) => {
-        if (response.status === httpStatusCode.CREATE) {
-          let accessToken = response.data["access-token"]
-          sessionStorage.setItem("accessToken", accessToken)
-          isValidToken.value = true
-        }
-      },
-      async (error) => {
-        // HttpStatus.UNAUTHORIZE(401) : RefreshToken 기간 만료 >> 다시 로그인!!!!
-        if (error.response.status === httpStatusCode.UNAUTHORIZED) {
-          // 다시 로그인 전 DB에 저장된 RefreshToken 제거.
-          await logout(
-            userInfo.value.userid,
-            (response) => {
-              if (response.status === httpStatusCode.OK) {
-                console.log("리프레시 토큰 제거 성공")
-              } else {
-                console.log("리프레시 토큰 제거 실패")
-              }
-              alert("RefreshToken 기간 만료!!! 다시 로그인해 주세요.")
-              isLogin.value = false
-              userInfo.value = null
-              isValidToken.value = false
-              router.push({ name: "user-login" })
-            },
-            (error) => {
-              console.error(error)
-              isLogin.value = false
-              userInfo.value = null
-            }
-          )
-        }
-      }
-    )
-  }
+//   const tokenRegenerate = async () => {
+//     await tokenRegeneration(
+//       JSON.stringify(userInfo.value),
+//       (response) => {
+//         if (response.status === httpStatusCode.CREATE) {
+//           let accessToken = response.data["access-token"]
+//           sessionStorage.setItem("accessToken", accessToken)
+//           isValidToken.value = true
+//         }
+//       },
+//       async (error) => {
+//         // HttpStatus.UNAUTHORIZE(401) : RefreshToken 기간 만료 >> 다시 로그인!!!!
+//         if (error.response.status === httpStatusCode.UNAUTHORIZED) {
+//           // 다시 로그인 전 DB에 저장된 RefreshToken 제거.
+//           await logout(
+//             userInfo.value.userid,
+//             (response) => {
+//               if (response.status === httpStatusCode.OK) {
+//                 console.log("리프레시 토큰 제거 성공")
+//               } else {
+//                 console.log("리프레시 토큰 제거 실패")
+//               }
+//               alert("RefreshToken 기간 만료!!! 다시 로그인해 주세요.")
+//               isLogin.value = false
+//               userInfo.value = null
+//               isValidToken.value = false
+//               router.push({ name: "user-login" })
+//             },
+//             (error) => {
+//               console.error(error)
+//               isLogin.value = false
+//               userInfo.value = null
+//             }
+//           )
+//         }
+//       }
+//     )
+//   }
 
   const userLogout = async () => {
     console.log("로그아웃 아이디 : " + userInfo.value.userId)
