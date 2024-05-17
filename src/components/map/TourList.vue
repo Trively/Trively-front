@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import axios from "axios";
 
@@ -7,9 +7,11 @@ const searchArea = ref("0");
 const searchKeyword = ref("");
 const selectedTypes = ref([]);
 const attractionId = ref();
+const lastAttractionId = ref(0);
 const tripList = ref([]);
 const areas = ref([]);
 const route = useRoute();
+const isLoading = ref(true);
 
 //카테고리 조회
 const ListAreas = () => {
@@ -44,23 +46,36 @@ const searchTrips = () => {
 
 const handleNotificationListScroll = (e) => {
   const { scrollHeight, scrollTop, clientHeight } = e.target;
-  const isAtTheBottom = scrollHeight === scrollTop + clientHeight;
+  const isAtTheBottom = scrollHeight - (scrollTop + clientHeight) < 10;
+  attractionId.value = tripList.value[tripList.value.length - 1].attractionId;
+
   // 일정 이상 밑으로 내려오면 함수 실행, 반복 호출을 막기위해 1초마다 스크롤 감지 후 실행
-  if (isAtTheBottom) {
-    setTimeout(() => handleLoadMore(), 500);
+  if (isAtTheBottom && lastAttractionId.value !== attractionId.value) {
+    isLoading.value = true;
+    setTimeout(() => {
+      handleLoadMore();
+      isLoading.value = false; // 1초 후에 isLoading.value를 false로 설정
+    }, 800); // 1초 지연
   }
 };
 
 // 내려오면 api 호출하여 리스트 아래에 더 추가
 const handleLoadMore = () => {
-  console.log("리스트 추가!");
-  attractionId.value = tripList.value[tripList.value.length - 1].attractionId;
-  searchTrips();
+  if (lastAttractionId.value !== attractionId.value) {
+    lastAttractionId.value = attractionId.value;
+    searchTrips();
+  }
 };
 
 onMounted(() => {
   ListAreas();
   searchTrips();
+  window.addEventListener("resize", handleNotificationListScroll);
+});
+
+onUnmounted(() => {
+  // 컴포넌트가 언마운트 되었을 때 리사이즈 이벤트 리스너를 제거합니다.
+  window.removeEventListener("resize", handleNotificationListScroll);
 });
 </script>
 
@@ -173,25 +188,33 @@ onMounted(() => {
             </tr>
           </thead>
           <tbody>
-              <tr
-                v-for="trip in tripList"
-                :key="trip.attractionId"
-                @click="moveCenter(trip.latitude, trip.longitude)"
-              >
-                <td><img :src="trip.image1 || '/src/assets/logo.png'" width="100px" /></td>
-                <td>{{ trip.name }}</td>
-                <td>{{ trip.address }} {{ trip.addr2 }}</td>
-              </tr>
+            <tr
+              v-for="trip in tripList"
+              :key="trip.attractionId"
+              @click="moveCenter(trip.latitude, trip.longitude)"
+            >
+              <td><img :src="trip.image1 || '/src/assets/logo.png'" width="100px" /></td>
+              <td>{{ trip.name }}</td>
+              <td>{{ trip.address }} {{ trip.addr2 }}</td>
+            </tr>
           </tbody>
         </table>
+        <div class="spinner-div" v-if="isLoading">
+          <a-spin />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.list{
+.list {
   height: calc(100vh - 70px);
   overflow: auto;
+}
+
+.spinner-div {
+  text-align: center;
+  border-radius: 4px;
 }
 </style>
