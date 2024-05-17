@@ -1,21 +1,37 @@
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import axios from "axios"
+import { ref } from "vue"
+import { storeToRefs } from "pinia"
+import { useRouter } from "vue-router"
+import { useMemberStore } from "@/stores/member"
+import { useMenuStore } from "@/stores/menu"
 
-const { VITE_MEMBER_BASE_URL } = import.meta.env
+
 const router = useRouter()
 
-const goToUserJoin = () => {
-    router.push({ name:'join' })
+const memberStore = useMemberStore()
+
+const { isLogin, isLoginError } = storeToRefs(memberStore)
+const { userLogin, getUserInfo } = memberStore
+const { changeMenuState } = useMenuStore()
+
+const loginUser = ref({
+  userId: "",
+  userPwd: "",
+})
+
+const login = async () => {
+  await userLogin(loginUser.value)
+  let token = sessionStorage.getItem("accessToken")
+  console.log(token)
+  console.log("isLogin: " + isLogin.value)
+  if (isLogin.value) {
+    getUserInfo(token)
+    changeMenuState()
+    router.replace("/")
+  }
 }
-
-const id = ref('')
-const password = ref('')
-
-
 const getLogin = () => {
-    axios.post("http://localhost/login", { id: id.value, password: password.value })
+    axios.post("http://localhost/api/member/login", { id: id.value, password: password.value })
         .then(response => {
             const token = response.data.accessToken;
             //토큰을 localStorage에 저장
