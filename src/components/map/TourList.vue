@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from "vue";
+import { ref, onMounted, onUnmounted, watch, inject } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
 import { storeToRefs } from "pinia";
@@ -15,6 +15,7 @@ const isLoading = ref(false);
 const mapTourList = useMapTourList();
 const { setMarkerList } = mapTourList;
 const { tripList, markerList } = storeToRefs(mapTourList);
+const map = ref(inject('map'));
 
 //카테고리 조회
 const ListAreas = () => {
@@ -97,7 +98,6 @@ const moveCenter = (lat, lng) => {
     const position = new kakao.maps.LatLng(lat, lng);
     map.value.setCenter(position);
 
-    // Find the corresponding marker
     const marker = markerList.value.find((marker) => marker.lat === lat && marker.lng === lng);
 
     if (marker) {
@@ -120,6 +120,7 @@ onUnmounted(() => {
 
 <template>
   <div class="list" @scroll="handleNotificationListScroll">
+    <button @click="$emit('close')" class="btn btn-sm btn-danger close-button">닫기</button>
     <div class="col-10 mx-auto">
       <div class="display-6 mb-4 text-center" role="alert"><h3>전국 관광지 정보</h3></div>
       <form class="d-flex" @submit.prevent="updateTripList" role="search">
@@ -230,7 +231,7 @@ onUnmounted(() => {
             <tr
               v-for="trip in tripList"
               :key="trip.attractionId"
-              @click="moveCenter(trip.latitude, trip.longitude)"
+              @click="moveCenter(trip.longitude, trip.latitude)"
             >
               <td><img :src="trip.image1 || '/src/assets/logo.png'" width="100px" /></td>
               <td>{{ trip.name }}</td>
@@ -255,5 +256,12 @@ onUnmounted(() => {
 .spinner-div {
   text-align: center;
   border-radius: 4px;
+}
+
+.open-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
 }
 </style>

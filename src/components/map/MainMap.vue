@@ -1,10 +1,10 @@
 <script setup>
 import { KakaoMap, KakaoMapMarker } from "vue3-kakao-maps";
-import { ref, watch } from "vue";
+import { ref, watch, inject } from "vue";
 import { useMapTourList } from "@/stores/mapTour"; // 스토어 경로에 따라 임포트 경로를 조정하세요.
 import { storeToRefs } from "pinia";
 
-const map = ref();
+const map = ref(inject('map'));
 const mapTourList = useMapTourList();
 const { markerList, tripList } = storeToRefs(mapTourList);
 

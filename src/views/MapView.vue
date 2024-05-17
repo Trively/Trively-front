@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, provide } from "vue";
 import MainMap from "@/components/map/MainMap.vue";
 import TourList from "@/components/map/TourList.vue";
 
@@ -7,6 +7,9 @@ const showTourList = ref(false);
 const toggleTourList = () => {
   showTourList.value = !showTourList.value;
 };
+
+const map = ref(null);
+provide('map', map); 
 </script>
 
 <template>
@@ -16,9 +19,8 @@ const toggleTourList = () => {
     class="btn btn-lg btn-jittery open-button btn-hover color-3">
     여행지 찾기!
     </button>
-    <button @click="toggleTourList" v-if="showTourList"
-    class="btn btn-sm btn-danger open-button">닫기</button>
-      <TourList v-if="showTourList" class="tour-list"></TourList>
+  
+    <TourList v-if="showTourList" @close="toggleTourList" class="tour-list"></TourList>
   </div>
 </template>
 
