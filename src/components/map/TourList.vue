@@ -2,6 +2,7 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
+import { storeToRefs } from "pinia";
 import { useMapTourList } from "@/stores/mapTour";
 
 const searchArea = ref("0");
@@ -10,8 +11,10 @@ const selectedTypes = ref([]);
 const attractionId = ref();
 const lastAttractionId = ref(0);
 const areas = ref([]);
-const isLoading = ref(true);
+const isLoading = ref(false);
 const mapTourList = useMapTourList();
+const { setMarkerList } = mapTourList;
+const { tripList, markerList } = storeToRefs(mapTourList);
 
 //카테고리 조회
 const ListAreas = () => {
@@ -25,7 +28,7 @@ const ListAreas = () => {
     });
 };
 
-const searchTrips = () => {
+const updateTripList = () => {
   axios
     .get(`http://localhost:80/api/attraction?typeIds=${selectedTypes.value}`, {
       params: {
@@ -35,7 +38,27 @@ const searchTrips = () => {
       },
     })
     .then((response) => {
-      Array.prototype.push.apply(mapTourList.tripList, response.data.data.attractions);
+      Array.prototype.push.apply(tripList.value, response.data.data.attractions);
+      setMarkerList();
+    })
+    .catch((error) => {
+      console.error("요청 중 오류 발생: ", error);
+    });
+};
+
+const search = () => {
+  markerList.value = [];
+  axios
+    .get(`http://localhost:80/api/attraction?typeIds=${selectedTypes.value}`, {
+      params: {
+        sidoCode: searchArea.value,
+        search: searchKeyword.value,
+        lastAttractId: attractionId.value,
+      },
+    })
+    .then((response) => {
+      tripList.value = response.data.data.attractions;
+      setMarkerList();
     })
     .catch((error) => {
       console.error("요청 중 오류 발생: ", error);
@@ -45,7 +68,7 @@ const searchTrips = () => {
 const handleNotificationListScroll = (e) => {
   const { scrollHeight, scrollTop, clientHeight } = e.target;
   const isAtTheBottom = scrollHeight - (scrollTop + clientHeight) < 10; //정확도 향상을 위해 10 이하로 설정
-  attractionId.value = mapTourList.tripList[mapTourList.tripList.length - 1].attractionId;
+  attractionId.value = tripList.value[tripList.value.length - 1].attractionId;
 
   // 일정 이상 밑으로 내려오면 함수 실행, 반복 호출을 막기위해 1초마다 스크롤 감지 후 실행
   if (isAtTheBottom && lastAttractionId.value !== attractionId.value) {
@@ -61,13 +84,27 @@ const handleNotificationListScroll = (e) => {
 const handleLoadMore = () => {
   if (lastAttractionId.value !== attractionId.value) {
     lastAttractionId.value = attractionId.value;
-    searchTrips();
+    updateTripList();
+  }
+};
+
+const moveCenter = (lat, lng) => {
+  if (map.value) {
+    const position = new kakao.maps.LatLng(lat, lng);
+    map.value.setCenter(position);
+
+    // Find the corresponding marker
+    const marker = markerList.value.find((marker) => marker.lat === lat && marker.lng === lng);
+
+    if (marker) {
+      marker.infoWindow.visible = true;
+    }
   }
 };
 
 onMounted(() => {
   ListAreas();
-  searchTrips();
+  updateTripList();
   window.addEventListener("resize", handleNotificationListScroll);
 });
 
@@ -81,7 +118,7 @@ onUnmounted(() => {
   <div class="list" @scroll="handleNotificationListScroll">
     <div class="col-10 mx-auto">
       <div class="display-6 mb-4 text-center" role="alert"><h3>전국 관광지 정보</h3></div>
-      <form class="d-flex" @submit.prevent="searchTrips" role="search">
+      <form class="d-flex" @submit.prevent="updateTripList" role="search">
         <select v-model="searchArea" class="form-select me-2" aria-label="Default select example">
           <option value="0" selected>지역 선택</option>
           <option v-for="area in areas" :key="area.boardId" :value="area.boardId">
@@ -96,7 +133,7 @@ onUnmounted(() => {
           aria-label="검색어"
         />
         <button
-          @click="searchTrips()"
+          @click="search()"
           class="btn btn-outline-dark text-nowrap"
           type="button"
           style="background-color: #001e3d; color: white"
@@ -177,7 +214,7 @@ onUnmounted(() => {
       </div>
       <div id="map" class="col-10 mx-auto mt-3 rounded-3" style="height: 100%"></div>
       <div class="row">
-        <table v-if="mapTourList.tripList.length > 0" class="table table-striped m-3 mx-auto">
+        <table v-if="tripList.length > 0" class="table table-striped m-3 mx-auto">
           <thead>
             <tr>
               <th>대표이미지</th>
@@ -187,7 +224,7 @@ onUnmounted(() => {
           </thead>
           <tbody>
             <tr
-              v-for="trip in mapTourList.tripList"
+              v-for="trip in tripList"
               :key="trip.attractionId"
               @click="moveCenter(trip.latitude, trip.longitude)"
             >

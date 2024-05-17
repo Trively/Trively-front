@@ -5,8 +5,8 @@ import TourList from "@/components/map/TourList.vue";
 
 <template>
   <div class="map-container">
-    <MainMap class="map"></MainMap>
     <TourList class="tour-list"></TourList>
+    <MainMap class="map"></MainMap>
   </div>
 </template>
 
@@ -33,7 +33,7 @@ import TourList from "@/components/map/TourList.vue";
   overflow-x: hidden;
   padding: 10px;
   margin: 10px;
-  z-index: 1;
+  z-index: 2;
   border: 1px solid #8f8f8f; /* 테두리 추가 */
   border-radius: 10px; /* 테두리 모서리 둥글게 */
 }
