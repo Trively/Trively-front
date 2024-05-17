@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
 import { storeToRefs } from "pinia";
@@ -64,6 +64,10 @@ const search = () => {
       console.error("요청 중 오류 발생: ", error);
     });
 };
+
+watch([searchArea, searchKeyword, selectedTypes], () => {
+  search();
+});
 
 const handleNotificationListScroll = (e) => {
   const { scrollHeight, scrollTop, clientHeight } = e.target;
