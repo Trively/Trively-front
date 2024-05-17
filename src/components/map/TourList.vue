@@ -1,17 +1,17 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { useRoute } from "vue-router";
 import axios from "axios";
+import { useMapTourList } from "@/stores/mapTour";
 
 const searchArea = ref("0");
 const searchKeyword = ref("");
 const selectedTypes = ref([]);
 const attractionId = ref();
 const lastAttractionId = ref(0);
-const tripList = ref([]);
 const areas = ref([]);
-const route = useRoute();
 const isLoading = ref(true);
+const mapTourList = useMapTourList();
 
 //카테고리 조회
 const ListAreas = () => {
@@ -35,9 +35,7 @@ const searchTrips = () => {
       },
     })
     .then((response) => {
-      // tripList.value=response.data.data.attractions;
-      // tripList.value.push(response.data.data.attractions);
-      Array.prototype.push.apply(tripList.value, response.data.data.attractions);
+      Array.prototype.push.apply(mapTourList.tripList, response.data.data.attractions);
     })
     .catch((error) => {
       console.error("요청 중 오류 발생: ", error);
@@ -46,8 +44,8 @@ const searchTrips = () => {
 
 const handleNotificationListScroll = (e) => {
   const { scrollHeight, scrollTop, clientHeight } = e.target;
-  const isAtTheBottom = scrollHeight - (scrollTop + clientHeight) < 10;
-  attractionId.value = tripList.value[tripList.value.length - 1].attractionId;
+  const isAtTheBottom = scrollHeight - (scrollTop + clientHeight) < 10; //정확도 향상을 위해 10 이하로 설정
+  attractionId.value = mapTourList.tripList[mapTourList.tripList.length - 1].attractionId;
 
   // 일정 이상 밑으로 내려오면 함수 실행, 반복 호출을 막기위해 1초마다 스크롤 감지 후 실행
   if (isAtTheBottom && lastAttractionId.value !== attractionId.value) {
@@ -179,7 +177,7 @@ onUnmounted(() => {
       </div>
       <div id="map" class="col-10 mx-auto mt-3 rounded-3" style="height: 100%"></div>
       <div class="row">
-        <table v-if="tripList.length > 0" class="table table-striped m-3 mx-auto">
+        <table v-if="mapTourList.tripList.length > 0" class="table table-striped m-3 mx-auto">
           <thead>
             <tr>
               <th>대표이미지</th>
@@ -189,7 +187,7 @@ onUnmounted(() => {
           </thead>
           <tbody>
             <tr
-              v-for="trip in tripList"
+              v-for="trip in mapTourList.tripList"
               :key="trip.attractionId"
               @click="moveCenter(trip.latitude, trip.longitude)"
             >
