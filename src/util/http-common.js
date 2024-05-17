@@ -6,7 +6,7 @@ const { VITE_BASE_URL } = import.meta.env;
 // local vue api axios instance
 function localAxios() {
   const instance = axios.create({
-    baseURL: VITE_BASE_URL,
+    baseURL: 'http://localhost/api',
     // withCredentials: true,
     // headers: {
     //   "Content-Type": "application/json;charset=utf-8",
@@ -17,13 +17,17 @@ function localAxios() {
   instance.defaults.headers.post["Content-Type"] = "application/json";
   instance.defaults.headers.put["Content-Type"] = "application/json";
 
-  //   // Request, Response 시 설정한 내용을 적용.
-  //   instance.interceptors.request.use((config) => {
-  //     return config;
-  //   }),
-  //     (error) => {
-  //       return Promise.reject(error);
-  //     };
+    // Request, Response 시 설정한 내용을 적용.
+  instance.interceptors.request.use((config) => {
+    const refreshToken = sessionStorage.getItem("refreshToken");
+    if (refreshToken) {
+      config.headers.Authorization = `${refreshToken}`;
+    }  
+    return config;
+    }),
+      (error) => {
+        return Promise.reject(error);
+      };
 
   //   // accessToken의 값이 유효하지 않은 경우,
   //   // refreshToken을 이용해 재발급 처리.

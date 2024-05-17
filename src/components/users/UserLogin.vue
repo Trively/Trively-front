@@ -5,7 +5,6 @@ import { useRouter } from "vue-router"
 import { useMemberStore } from "@/stores/member"
 import { useMenuStore } from "@/stores/menu"
 
-
 const router = useRouter()
 
 const memberStore = useMemberStore()
@@ -15,8 +14,8 @@ const { userLogin, getUserInfo } = memberStore
 const { changeMenuState } = useMenuStore()
 
 const loginUser = ref({
-  userId: "",
-  userPwd: "",
+  id: "",
+  password: "",
 })
 
 const login = async () => {
@@ -30,47 +29,9 @@ const login = async () => {
     router.replace("/")
   }
 }
-const getLogin = () => {
-    axios.post("http://localhost/api/member/login", { id: id.value, password: password.value })
-        .then(response => {
-            const token = response.data.accessToken;
-            //토큰을 localStorage에 저장
-            localStorage.setItem('accessToken', token);
-            router.push({name: 'home'})
-        })
-        .catch(error => {
-        console.log('Error 발생: ', error);
-    })
+const goToUserJoin = () => {
+    router.push({ name:'join' })
 }
-// axios 인터셉터 설정하여 이후 요청에 토큰 포함
-axios.interceptors.request.use(config => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-        // 토큰이 만료되었는지 확인
-        if (isTokenExpired(token)) {
-            // 토큰이 만료되었으면 로그아웃 처리
-            localStorage.removeItem('accessToken');
-            router.push({ name: 'login' });
-        } else {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-    }
-    return config;
-}, error => {
-    return Promise.reject(error);
-});
-
-// axios 응답 인터셉터 설정하여 401 에러 처리
-axios.interceptors.response.use(response => {
-    return response;
-}, error => {
-    if (error.response.status === 401) {
-        // 401 에러 발생 시 로그아웃 처리
-        localStorage.removeItem('accessToken');
-        router.push({ name: 'login' });
-    }
-    return Promise.reject(error);
-});
 </script>
 
 <template>
@@ -84,11 +45,11 @@ axios.interceptors.response.use(response => {
             <h1 class="h3 mb-3 fw-normal">로그인</h1>
 
             <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="floatingInput" v-model="id" placeholder="Id">
+                <input type="text" class="form-control" id="floatingInput" v-model="loginUser.id" placeholder="Id">
                 <label for="floatingInput">아이디</label>
             </div>
             <div class="form-floating">
-                <input type="password" class="form-control" id="floatingPassword" v-model="password" placeholder="Password">
+                <input type="password" class="form-control" id="floatingPassword" v-model="loginUser.password" placeholder="Password">
                 <label for="floatingPassword">비밀번호</label>
             </div>
 
@@ -99,7 +60,7 @@ axios.interceptors.response.use(response => {
                 </label>
             </div>
             <div class="buttons">
-                <button type="button" @click="getLogin" class="btn w-100 py-2">로그인</button>
+                <button type="button" @click="login" class="btn w-100 py-2">로그인</button>
                 <button type="button" @click="goToUserJoin" class="btn w-100 py-2">회원가입</button>
             </div>
         </form>

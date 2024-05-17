@@ -57,6 +57,9 @@ const { changeMenuState } = menuStore;
       >
         <div class="offcanvas-body ms-5">
           <ul class="navbar-nav flex-grow-1 justify-content-between">
+            <li class="nav-item ms-auto">
+              <router-link class="nav-link" to="/post">게시판</router-link>
+            </li>
             <template v-for="menu in menuList" :key="menu.routeName">
               <template v-if="menu.show">
                 <template v-if="menu.routeName === 'logout'">
