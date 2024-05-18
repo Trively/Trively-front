@@ -24,7 +24,7 @@ const updateMapBounds = () => {
   }
 };
 
-watch([tripList], () => {
+watch([tripList, markerList], () => {
   updateMapBounds();
 });
 </script>

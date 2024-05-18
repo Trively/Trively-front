@@ -253,6 +253,13 @@ onUnmounted(() => {
   overflow: auto;
 }
 
+table.table tr:hover {
+  box-shadow: 0 4px 8px rgba(106, 193, 224, 0.8);
+  transform: scale(1.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+
 .spinner-div {
   text-align: center;
   border-radius: 4px;

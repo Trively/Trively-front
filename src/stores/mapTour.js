@@ -18,7 +18,7 @@ export const useMapTourList = defineStore('mapTourList',()=>  {
             },
           });
         });
-        Array.prototype.push.apply(markerList.value, newMarkers);
+        markerList.value = newMarkers;
       }
   
     return { tripList, markerList, setMarkerList };

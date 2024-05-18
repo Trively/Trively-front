@@ -4,12 +4,13 @@ import MainMap from "@/components/map/MainMap.vue";
 import TourList from "@/components/map/TourList.vue";
 
 const showTourList = ref(false);
+const map = ref(null);
+provide('map', map); 
+
 const toggleTourList = () => {
   showTourList.value = !showTourList.value;
 };
 
-const map = ref(null);
-provide('map', map); 
 </script>
 
 <template>
@@ -19,8 +20,10 @@ provide('map', map);
     class="btn btn-lg btn-jittery open-button btn-hover color-3">
     여행지 찾기!
     </button>
-  
-    <TourList v-if="showTourList" @close="toggleTourList" class="tour-list"></TourList>
+
+    <TourList v-if="showTourList" 
+    @close="toggleTourList" 
+    class="tour-list"></TourList>
   </div>
 </template>
 
