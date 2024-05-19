@@ -8,6 +8,7 @@ const showTourList = ref(false);
 const showPlanList = ref(false);
 const map = ref(null);
 provide('map', map); 
+provide('showPlanList', showPlanList)
 
 const toggleTourList = () => {
   showTourList.value = !showTourList.value;

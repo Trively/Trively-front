@@ -1,6 +1,5 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch, inject } from "vue";
-import { useRoute } from "vue-router";
 import axios from "axios";
 import { storeToRefs } from "pinia";
 import { useMapTourList } from "@/stores/mapTour";
@@ -16,6 +15,8 @@ const mapTourList = useMapTourList();
 const { setMarkerList } = mapTourList;
 const { tripList, markerList, planList } = storeToRefs(mapTourList);
 const map = ref(inject('map'));
+
+const showPlanList = ref(inject('showPlanList'));
 
 //카테고리 조회
 const ListAreas = () => {
@@ -108,6 +109,11 @@ const moveCenter = (lat, lng) => {
 
 const addToPlan = (trip) => {
   planList.value.push(trip);
+
+   // PlanList가 닫혀있으면 열기
+   if (!showPlanList.value) {
+    showPlanList.value = true;
+  }
 };
 
 onMounted(() => {
