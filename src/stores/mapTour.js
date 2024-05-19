@@ -11,6 +11,25 @@ export const useMapTourList = defineStore('mapTourList',()=>  {
       const newMarkers = [];
       tripList.value.forEach((trip) => {
         newMarkers.push({
+          attractionId: trip.attractionId,
+          planned: false,
+          lat: trip.longitude,
+          lng: trip.latitude,
+          infoWindow: {
+            content: trip.name,
+            visible: false,
+          },
+        });
+      });
+      markerList.value = newMarkers;
+    }
+
+    const setPlanToMarkerList = () => {
+      const newMarkers = [];
+      planList.value.forEach((trip) => {
+        newMarkers.push({
+          attractionId: trip.attractionId,
+          planned: false,
           lat: trip.longitude,
           lng: trip.latitude,
           infoWindow: {
@@ -22,5 +41,5 @@ export const useMapTourList = defineStore('mapTourList',()=>  {
       markerList.value = newMarkers;
     }
   
-    return { tripList, markerList, planList, setMarkerList };
+    return { tripList, markerList, planList, setMarkerList, setPlanToMarkerList };
 })

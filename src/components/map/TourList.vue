@@ -108,12 +108,35 @@ const moveCenter = (lat, lng) => {
 };
 
 const addToPlan = (trip) => {
-  planList.value.push(trip);
+  // 새로운 여행지의 id 생성
+  const newId = generateUniqueId();
+  
+  // 새로운 여행지 객체 생성
+  const newTrip = {
+    id: newId, // 고유한 id 부여
+    attractionId: trip.attractionId,
+    name: trip.name,
+    address: trip.address,
+    addr2: trip.addr2,
+    image1: trip.image1,
+    sidoCode: trip.sidoCode,
+    typeId: trip.typeId,
+    latitude: trip.latitude,
+    longitude: trip.longitude,
+    date: '', // 여행일정 초기값 설정
+  };
 
-   // PlanList가 닫혀있으면 열기
+
+  planList.value.push(newTrip);
+   // PlanList가 닫혀있으면 열기메
    if (!showPlanList.value) {
     showPlanList.value = true;
   }
+};
+
+// 고유한 id 생성 함수
+const generateUniqueId = () => {
+  return '_' + Math.random().toString(36).substr(2, 9);
 };
 
 onMounted(() => {
@@ -296,6 +319,7 @@ table.table .table-contents:hover {
   transition: all 0.3s ease;
   position: relative;
   display: inline-block;
+  border-radius: 10px;
 }
 .btn-11 {
   overflow: hidden;

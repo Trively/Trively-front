@@ -6,7 +6,7 @@ import { storeToRefs } from "pinia";
 
 const map = ref(inject('map'));
 const mapTourList = useMapTourList();
-const { markerList, tripList } = storeToRefs(mapTourList);
+const { markerList, tripList, planList } = storeToRefs(mapTourList);
 
 const onLoadKakaoMap = (mapRef) => {
   map.value = mapRef;
@@ -27,6 +27,7 @@ const updateMapBounds = () => {
 watch([tripList, markerList], () => {
   updateMapBounds();
 });
+
 </script>
 
 <template>
