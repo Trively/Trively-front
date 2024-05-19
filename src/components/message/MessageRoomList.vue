@@ -31,9 +31,10 @@
                     <button @click="closeModal" class="close-button">x</button>
                 </div>
                 <div class="modal-body">
-                    <textarea v-model="message.content" placeholder="메시지를 입력하세요"></textarea>
-                    <div v-if="contentErrMsg" class="error-msg">{{ contentErrMsg }}</div>
-                </div>
+                  <textarea v-model="message.content" placeholder="메시지를 입력하세요"></textarea>
+                  <div class="char-count">{{ currentContentLength }}/255</div>
+                  <div v-if="contentErrMsg" class="error-msg">{{ contentErrMsg }}</div>
+              </div>
                 <div class="modal-footer">
                     <button @click="confirmSend" class="btn">전송</button>
                 </div>
@@ -56,7 +57,22 @@ const message = ref({
     content: "",
 });
 const contentErrMsg = ref("");
-
+const MAX_CONTENT_LENGTH = 255;
+const currentContentLength = ref(0);
+// 텍스트 입력 길이 확인 및 오류 메시지 표시 함수
+const checkContentLength = () => {
+    if (message.value.content.length > MAX_CONTENT_LENGTH) {
+        contentErrMsg.value = `내용은 ${MAX_CONTENT_LENGTH}자를 넘을 수 없습니다.`;
+    } else {
+        contentErrMsg.value = ""; // 오류 메시지 초기화
+    }
+};
+const truncateRecentContent = (content, maxLength) => {
+  if (content.length > maxLength) {
+    return content.substring(0, maxLength) + "...";
+  }
+  return content;
+};
 const fetchMessages = async () => {
     try {
         const response = await local.get(`/message/${roomId.value}`);
@@ -67,12 +83,16 @@ const fetchMessages = async () => {
 };
 
 const fetchRooms = async () => {
-    try {
-        const response = await local.get('/message');
-        rooms.value = response.data.data.rooms;
-    } catch (error) {
-        console.error("Error fetching message rooms:", error);
-    }
+  try {
+    const response = await local.get('/message');
+    const fetchedRooms = response.data.data.rooms.map(room => ({
+      ...room,
+      recentContent: truncateRecentContent(room.recentContent, 50) // recentContent를 50자까지 자르고 "..."으로 대체
+    }));
+    rooms.value = fetchedRooms;
+  } catch (error) {
+    console.error("Error fetching message rooms:", error);
+  }
 };
 
 const selectRoom = (id) => {
@@ -100,6 +120,10 @@ const confirmSend = () => {
         contentErrMsg.value = "내용을 입력해주세요!";
         return;
     }
+    checkContentLength();
+    if(contentErrMsg.value){
+      return;
+    }
     local
         .post(`/message/room/${roomId.value}`, {
             content: message.value.content,
@@ -123,6 +147,11 @@ watch(showModal, (newVal) => {
     }
 });
 
+// message.value.content가 변경될 때마다 currentContentLength 업데이트
+watch(() => message.value.content, (newVal) => {
+  currentContentLength.value = newVal.length;
+  checkContentLength();
+});
 </script>
 
 <style scoped>
