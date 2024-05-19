@@ -84,7 +84,7 @@ const togglePlanList = () => {
 .plan-list {
   position: absolute;
   top: 0;
-  right: 0; /* 왼쪽 상단에 위치 */
+  right: 0; 
   width: 500px; /* 너비 조정 가능 */
   height: 97%; /* 맵과 같은 높이로 설정 */
   background-color: rgba(255, 255, 255, 0.8); /* 배경색과 투명도 조정 */
