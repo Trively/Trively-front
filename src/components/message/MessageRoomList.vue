@@ -1,8 +1,9 @@
 <template>
     <div class="outer-container">
         <div class="container">
+          
             <div class="room-list">
-                <h3 class="title">쪽지 목록</h3>
+                <h4 class="title">쪽지 목록</h4>
                 <ul>
                     <li v-for="room in rooms" :key="room.roomId" class="room-item" @click="selectRoom(room.roomId)">
                         <h3>{{ room.nickname }}</h3>
@@ -13,7 +14,16 @@
             </div>
             <div class="message-room" v-show="showDetail">
                 <div class="header">
-                    <button @click="closeDetail">닫기</button>
+                  <div class="left">
+                    <h4>{{selectedRoomNickname}}님과의 쪽지
+                      <img src="@/assets/plane.png" class="header-image">
+                    </h4>
+                    
+                  </div>
+                  <div class="right">
+                    <button class="reply-button" @click="openReplyModal">답장하기</button>
+                    <button class = "h-close-button"@click="closeDetail">닫기</button>
+                  </div>
                 </div>
                 <div class="messages">
                     <div v-for="message in messages" :key="message.messageId" :class="{'message-sent': message.sender, 'message-received': !message.sender}">
@@ -21,7 +31,7 @@
                         <small>{{ message.createdAt }}</small>
                     </div>
                 </div>
-                <button class="reply-button" @click="openReplyModal">답장하기</button>
+                
             </div>
         </div>
         <div class="modal-overlay" v-if="showModal">
@@ -95,8 +105,14 @@ const fetchRooms = async () => {
   }
 };
 
+// 선택된 방의 nickname을 저장할 변수 추가
+const selectedRoomNickname = ref("");
+
 const selectRoom = (id) => {
     roomId.value = id;
+    // 선택된 방의 nickname을 할당
+    const selectedRoom = rooms.value.find(room => room.roomId === id);
+    selectedRoomNickname.value = selectedRoom ? selectedRoom.nickname : "";
     showDetail.value = true;
     fetchMessages();
 };
@@ -201,13 +217,15 @@ html, body {
 }
 
 .room-item {
-  padding: 15px;
+  padding: 10px;
   margin-bottom: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
   background-color: #d5dcf5;
+  display: flex;
+  flex-direction: column; /* 제목과 내용을 세로로 배치하기 위해 추가 */
 }
 
 .room-item:hover {
@@ -217,6 +235,10 @@ html, body {
 .room-item h3 {
   margin: 0 0 5px 0;
   font-size: 1.1em;
+  top: 0;
+
+  z-index: 1;
+  padding: 15px;
 }
 
 .room-item p {
@@ -225,9 +247,12 @@ html, body {
   color: #555;
 }
 
-.room-item small {
-  font-size: 0.8em;
-  color: #999;
+.room-item p {
+  margin: 0 0 5px 0;
+  font-size: 0.9em;
+  color: #555;
+  overflow-y: auto; /* 내용 영역 스크롤 */
+  max-height: 200px; /* 내용 영역 최대 높이 설정 */
 }
 
 .message-room {
@@ -237,24 +262,35 @@ html, body {
 
 .header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
 }
+.left {
+    flex: 1;
+}
 
-.header button {
-  padding: 5px 10px;
-  background-color: #b6cfea;
-  border: none;
-  color: #fff;
+.right {
+    display: flex;
+}
+.h-close-button,
+.reply-button {
+  padding: 5px 10px; /* 공통으로 사용할 패딩 값 */
   border-radius: 5px;
+  border: none;
   cursor: pointer;
+  margin-left: 5px;
+}
+.h-close-button {
+  background-color: #b6cfea;
+  color: #fff;
 }
 
 .messages {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  max-height: 60vh;
+  max-height: 70vh;
 }
 
 .message-sent {
@@ -277,6 +313,7 @@ html, body {
 
 .message-room p {
   margin: 0;
+  word-wrap: break-word;
 }
 
 .message-room small {
@@ -286,17 +323,13 @@ html, body {
   margin-top: 5px;
 }
 .reply-button {
-  margin-top: 20px; /* 이전 위치 지정 제거 */
-  padding: 10px 20px;
   background-color: #7685b5;
   color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  position: absolute; /* 요소의 위치를 고정 */
-  bottom: 70px; /* 하단 여백 조정 */
-  left: 60%; /* 가운데 정렬을 위한 왼쪽 위치 조정 */
-  transform: translateX(-50%); /* 가운데 정렬을 위한 가로 위치 조정 */
+
+}.header-image {
+    height: 1em; /* 이미지의 높이 설정 */
+    width: auto; /* 이미지의 너비를 자동으로 조정하여 비율 유지 */
+    margin-right: 5px; /* 이미지와 텍스트 사이의 간격 조정 */
 }
 
 .reply-button:hover {
