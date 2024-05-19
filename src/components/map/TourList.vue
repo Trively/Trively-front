@@ -14,7 +14,7 @@ const areas = ref([]);
 const isLoading = ref(false);
 const mapTourList = useMapTourList();
 const { setMarkerList } = mapTourList;
-const { tripList, markerList } = storeToRefs(mapTourList);
+const { tripList, markerList, planList } = storeToRefs(mapTourList);
 const map = ref(inject('map'));
 
 //카테고리 조회
@@ -104,6 +104,10 @@ const moveCenter = (lat, lng) => {
       marker.infoWindow.visible = true;
     }
   }
+};
+
+const addToPlan = (trip) => {
+  planList.value.push(trip);
 };
 
 onMounted(() => {
@@ -225,6 +229,7 @@ onUnmounted(() => {
               <th>대표이미지</th>
               <th>관광지명</th>
               <th>주소</th>
+              <th>계획</th>
             </tr>
           </thead>
           <tbody>
@@ -232,10 +237,12 @@ onUnmounted(() => {
               v-for="trip in tripList"
               :key="trip.attractionId"
               @click="moveCenter(trip.longitude, trip.latitude)"
+              class="table-contents"
             >
               <td><img :src="trip.image1 || '/src/assets/logo.png'" width="100px" /></td>
               <td>{{ trip.name }}</td>
               <td>{{ trip.address }} {{ trip.addr2 }}</td>
+              <td>  <button class="custom-btn btn-11"  @click="addToPlan(trip)">추가</button></td>
             </tr>
           </tbody>
         </table>
@@ -253,12 +260,11 @@ onUnmounted(() => {
   overflow: auto;
 }
 
-table.table tr:hover {
+table.table .table-contents:hover {
   box-shadow: 0 4px 8px rgba(106, 193, 224, 0.8);
   transform: scale(1.1);
   transition: transform 0.3s, box-shadow 0.3s;
 }
-
 
 .spinner-div {
   text-align: center;
@@ -270,5 +276,51 @@ table.table tr:hover {
   top: 10px;
   left: 10px;
   z-index: 10;
+}
+
+.custom-btn {
+  width: 50px;
+  /* height: 40px;
+  padding: 10px 25px; */
+  border: 2px solid #000;
+  font-family: 'Lato', sans-serif;
+  font-weight: 500;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
+}
+.btn-11 {
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+.btn-11:hover {
+   background: #000;
+  color: #fff;
+}
+.btn-11:before {
+    position: absolute;
+    content: '';
+    display: inline-block;
+    top: -180px;
+    left: 0;
+    width: 30px;
+    height: 100%;
+    background-color: #fff;
+    animation: shiny-btn1 3s ease-in-out infinite;
+}
+.btn-11:active{
+  box-shadow:  4px 4px 6px 0 rgba(255,255,255,.3),
+              -4px -4px 6px 0 rgba(116, 125, 136, .2), 
+    inset -4px -4px 6px 0 rgba(255,255,255,.2),
+    inset 4px 4px 6px 0 rgba(0, 0, 0, .2);
+}
+
+@-webkit-keyframes shiny-btn1 {
+    0% { -webkit-transform: scale(0) rotate(45deg); opacity: 0; }
+    80% { -webkit-transform: scale(0) rotate(45deg); opacity: 0.5; }
+    81% { -webkit-transform: scale(4) rotate(45deg); opacity: 1; }
+    100% { -webkit-transform: scale(50) rotate(45deg); opacity: 0; }
 }
 </style>

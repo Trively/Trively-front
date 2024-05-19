@@ -2,13 +2,18 @@
 import { ref, provide } from "vue";
 import MainMap from "@/components/map/MainMap.vue";
 import TourList from "@/components/map/TourList.vue";
+import PlanList from "@/components/map/PlanList.vue";
 
 const showTourList = ref(false);
+const showPlanList = ref(false);
 const map = ref(null);
 provide('map', map); 
 
 const toggleTourList = () => {
   showTourList.value = !showTourList.value;
+};
+const togglePlanList = () => {
+  showPlanList.value = !showPlanList.value;
 };
 
 </script>
@@ -17,13 +22,19 @@ const toggleTourList = () => {
   <div class="map-container">
     <MainMap class="map"></MainMap>
     <button @click="toggleTourList"  v-if="!showTourList"
-    class="btn btn-lg btn-jittery open-button btn-hover color-3">
+    class="btn btn-lg btn-jittery open-button-tour btn-hover color-3">
     여행지 찾기!
     </button>
 
     <TourList v-if="showTourList" 
     @close="toggleTourList" 
     class="tour-list"></TourList>
+
+    <PlanList v-if="showPlanList" class="plan-list" @close="togglePlanList"></PlanList>
+    <button @click="togglePlanList"  v-if="!showPlanList"
+    class="btn btn-lg btn-jittery open-button-plan btn-hover color-3">
+    나의 계획!
+    </button>
   </div>
 </template>
 
@@ -39,10 +50,17 @@ const toggleTourList = () => {
   width: 100% !important;
 }
 
-.open-button {
+.open-button-tour {
   position: absolute;
   top: 10px;
   left: 10px;
+  z-index: 10;
+}
+
+.open-button-plan {
+  position: absolute;
+  top: 10px;
+  right: 10px;
   z-index: 10;
 }
 
@@ -50,7 +68,23 @@ const toggleTourList = () => {
   position: absolute;
   top: 0;
   left: 0; /* 왼쪽 상단에 위치 */
-  width: 450px; /* 너비 조정 가능 */
+  width: 500px; /* 너비 조정 가능 */
+  height: 97%; /* 맵과 같은 높이로 설정 */
+  background-color: rgba(255, 255, 255, 0.8); /* 배경색과 투명도 조정 */
+  overflow-y: auto; /* 내용이 넘칠 경우 스크롤 가능하도록 설정 */
+  overflow-x: hidden;
+  padding: 10px;
+  margin: 10px;
+  z-index: 2;
+  border: 1px solid #8f8f8f; /* 테두리 추가 */
+  border-radius: 10px; /* 테두리 모서리 둥글게 */
+}
+
+.plan-list {
+  position: absolute;
+  top: 0;
+  right: 0; /* 왼쪽 상단에 위치 */
+  width: 500px; /* 너비 조정 가능 */
   height: 97%; /* 맵과 같은 높이로 설정 */
   background-color: rgba(255, 255, 255, 0.8); /* 배경색과 투명도 조정 */
   overflow-y: auto; /* 내용이 넘칠 경우 스크롤 가능하도록 설정 */

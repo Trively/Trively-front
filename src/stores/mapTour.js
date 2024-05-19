@@ -5,21 +5,22 @@ export const useMapTourList = defineStore('mapTourList',()=>  {
     // 상태
     const tripList = ref([])
     const markerList = ref([])
+    const planList = ref([])
 
     const setMarkerList = () => {
-        const newMarkers = [];
-        tripList.value.forEach((trip) => {
-          newMarkers.push({
-            lat: trip.longitude,
-            lng: trip.latitude,
-            infoWindow: {
-              content: trip.name,
-              visible: false,
-            },
-          });
+      const newMarkers = [];
+      tripList.value.forEach((trip) => {
+        newMarkers.push({
+          lat: trip.longitude,
+          lng: trip.latitude,
+          infoWindow: {
+            content: trip.name,
+            visible: false,
+          },
         });
-        markerList.value = newMarkers;
-      }
+      });
+      markerList.value = newMarkers;
+    }
   
-    return { tripList, markerList, setMarkerList };
+    return { tripList, markerList, planList, setMarkerList };
 })
