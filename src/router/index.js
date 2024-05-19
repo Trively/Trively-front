@@ -12,9 +12,15 @@ import UserLogin from "@/components/users/UserLogin.vue"
 import UserJoin from "@/components/users/UserJoin.vue"
 import UserMyPage from "@/components/users/UserMyPage.vue"
 
+
+import MessageView from "@/views/MessageView.vue"
+import MessageSend from '@/components/message/MessageSend.vue'
+import MessageRoomList from '@/components/message/MessageRoomList.vue'
+import MessageRoomDetail from '@/components/message/MessageRoomDetail.vue'
 import { storeToRefs } from "pinia";
 
 import { useMemberStore } from "@/stores/member";
+
 
 const onlyAuthUser = async (to, from, next) => {
   const memberStore = useMemberStore();
@@ -87,6 +93,29 @@ const router = createRouter({
           path: "myPage",
           name: "myPage",
           component: UserMyPage
+        }
+      ]
+
+    },
+    {
+      path: '/message',
+      name: 'message',
+      component: MessageView,
+      children: [
+        {
+          path: ":memberId",
+          name: "messageSend",
+          component: MessageSend
+        },
+        {
+          path: "",
+          name: "messageRoomList",
+          component: MessageRoomList,
+        },
+        {
+          path: ":roomId",
+          name: "messageRoomDetail",
+          component: MessageRoomDetail,
         }
       ]
 
