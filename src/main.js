@@ -6,7 +6,6 @@ import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import App from './App.vue'
 import router from './router'
 import Antd from 'ant-design-vue';
-import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 
 import 'ant-design-vue/dist/reset.css';
 import "bootstrap/dist/css/bootstrap.min.css";
