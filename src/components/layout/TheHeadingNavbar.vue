@@ -64,7 +64,7 @@ const { changeMenuState } = menuStore;
               <template v-if="menu.show">
                 <template v-if="menu.routeName === 'logout'">
                   <li class="nav-item">
-                  <router-link to="/" @click.prevent="logout" class="nav-link">{{
+                  <router-link to="/" @click.prevent="memberStore.userLogout(); changeMenuState()" class="nav-link">{{
                     menu.name
                   }}</router-link>
                 </li>
@@ -78,26 +78,7 @@ const { changeMenuState } = menuStore;
               </template>
               </template>
             </template>
-            <!-- <li class="nav-item ms-auto">
-              <router-link class="nav-link" to="/post">게시판</router-link>
-            </li>
-            <template v-if="user">
-              <li class="nav-item ms-auto">
-                <router-link class="nav-link" to="/user/mypage">내 정보</router-link>
-              </li>
-              <li class="nav-item ms-auto">
-                <router-link class="nav-link" to="/mytrip">나만의 여행지</router-link>
-              </li>
-              <li class="nav-item ms-auto">
-                <a class="nav-link" href="/member?action=logout">로그아웃</a>
-              </li>
-            </template>
-            <template v-else>
-              <li class="nav-item ms-auto">&nbsp;&nbsp;&nbsp;&nbsp;</li>
-              <li class="nav-item ms-auto">
-                <router-link class="nav-link" to="/member/login">로그인</router-link>
-              </li>
-            </template> -->
+            
           </ul>
         </div>
       </div>

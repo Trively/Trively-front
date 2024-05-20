@@ -203,6 +203,8 @@ html, body {
   padding: 20px;
   border-right: 1px solid #ccc;
   overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-width: none;
 }
 
 .title {
@@ -241,11 +243,6 @@ html, body {
   padding: 15px;
 }
 
-.room-item p {
-  margin: 0 0 5px 0;
-  font-size: 0.9em;
-  color: #555;
-}
 
 .room-item p {
   margin: 0 0 5px 0;
@@ -253,6 +250,7 @@ html, body {
   color: #555;
   overflow-y: auto; /* 내용 영역 스크롤 */
   max-height: 200px; /* 내용 영역 최대 높이 설정 */
+
 }
 
 .message-room {
@@ -290,6 +288,8 @@ html, body {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-width: none;
   max-height: 70vh;
 }
 
