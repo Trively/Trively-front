@@ -29,6 +29,7 @@ export const useMemberStore = defineStore("memberStore", () => {
           isValidToken.value = true
           sessionStorage.setItem("accessToken", accessToken)
           sessionStorage.setItem("refreshToken", refreshToken)
+          
         }
       },
       (error) => {

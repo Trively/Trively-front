@@ -53,7 +53,7 @@ onMounted(() => {
           <div class="col-lg-10">
             <h2 class="my-3 py-3 text-center">글목록</h2>
           </div>
-          <div class="col-lg-10">
+          <div class="col-lg-10-2">
             <div class="row align-self-center mb-2">
               <div class="col-md-2 text-start">
                 <button type="button" class="btn btn-success btn-sm" @click="moveWrite" v-if="memberStore.userInfo">
@@ -83,4 +83,10 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.col-lg-10-2 {
+  border-radius: 15px; /* Adjust this value to make corners more or less rounded */
+  padding: 15px; /* Optional: add some padding inside the element */
+  background-color: #fff; /* Optional: change the background color */
+}
+</style>
