@@ -1,4 +1,12 @@
-<script setup></script>
+<script setup>
+import { useRoute, useRouter } from "vue-router";
+
+const router = useRouter();
+
+function moveMap() {
+  router.push({ name: "map" });
+}
+</script>
 
 <template>
   <link href="https://webfontworld.github.io/goodchoice/Jalnan.css" rel="stylesheet" />
@@ -77,6 +85,7 @@
                   style="background-color: #001e3d; color: white"
                   type="button"
                   id="index-search-btn"
+                  @click="moveMap()"
                 >
                   <i class="bi bi-search"></i> 검색
                 </button>
