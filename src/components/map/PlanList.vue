@@ -1,10 +1,16 @@
 <script setup>
+import { ref } from 'vue'
 import { useMapTourList } from '@/stores/mapTour'
 import draggable from 'vuedraggable'
+import { localAxios } from "@/util/http-common";
 
 const mapTourList = useMapTourList();
 const { setPlanToMarkerList } = mapTourList;
 const { planList } = useMapTourList()
+const local = localAxios();
+
+const showModal = ref(false)
+const title = ref('')
 
 const removeItem = (index) => {
   planList.splice(index, 1);
@@ -15,6 +21,33 @@ const updateMarker = () => {
   setPlanToMarkerList()
 } 
 
+const savePlan = () => {
+  if(!title.value.trim()) {
+    alert('제목을 입력해주세요!');
+    return;
+  }
+
+  const plans = planList.map((plan, index) => ({
+    attractionId: plan.attractionId,
+    planDate: plan.date,
+    orders: index
+  }))
+  const payload = {
+    title: title.value,
+    plans
+  }
+
+  local
+    .post('/plan', payload)
+    .then((response) => {
+      alert('계획이 성공적으로 저장되었습니다!')
+      showModal.value = false
+    })
+    .catch((error) => {
+      console.error('요청 중 오류 발생: ', error)
+      alert('로그인 후 다시 시도해주세요!')
+    })
+}
 </script>
 
 <template>
@@ -49,8 +82,17 @@ const updateMarker = () => {
           </div>
         </template>
       </draggable>
-      <button  v-if="planList.length > 0" class="btn btn-sm btn-primary btn-save">저장</button>
+      <button v-if="planList.length > 0" @click="showModal = true" class="btn btn-sm btn-primary btn-save">저장</button>
     </div>  
+    <div v-if="showModal" class="modal">
+      <div class="modal-content">
+        <span @click="showModal = false" class="close">&times;</span>
+        <h2>멋있는 일정의</h2>
+        <h2>제목을 지어주세요!</h2>
+        <input type="text" v-model="title" placeholder="여행 계획 제목을 입력하세요" class="form-control"/>
+        <button @click="savePlan" class="btn btn-sm btn-success mt-2">저장</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -74,5 +116,33 @@ const updateMarker = () => {
 .btn-save {
   position: absolute;
   right: 50px;
+}
+
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  width: 400px;
+  text-align: center;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  cursor: pointer;
 }
 </style>
