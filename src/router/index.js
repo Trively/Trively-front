@@ -11,6 +11,7 @@ import TheUserView from "@/views/TheUserView.vue"
 import UserLogin from "@/components/users/UserLogin.vue"
 import UserJoin from "@/components/users/UserJoin.vue"
 import UserMyPage from "@/components/users/UserMyPage.vue"
+import MapView from "@/views/MapView.vue"
 
 
 import MessageView from "@/views/MessageView.vue"
@@ -119,6 +120,11 @@ const router = createRouter({
         }
       ]
 
+    }, 
+    {
+      path: "/map",
+      name: "map",
+      component: MapView
     }
 
   ]
