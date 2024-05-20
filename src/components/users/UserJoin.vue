@@ -1,21 +1,75 @@
-<script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import axios from "axios"
-
-const { VITE_MEMBER_BASE_URL } = import.meta.env
-
-const router = useRouter();
-
-const id = ref('')
-const password = ref('')
-const email = ref('')
-const nickname = ref('')
-
-const successModal = ref(false); // 모달 표시 상태 변수
-const errorModal = ref(false); // 항목 미입력 모달 표시 상태 변수
-
-const userRegist = () => {
+<template>
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <div class="main">
+      <form @submit.prevent="submitForm">
+        <div class="logo-container">
+          <img class="mb-4" src="@/assets/logo.png" width="200">
+        </div>
+        <h1 class="h3 mb-3 fw-normal">회원가입</h1>
+  
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control" placeholder="ID" v-model="id">
+          <label for="floatingInput">아이디</label>
+        </div>
+  
+        <div class="form-floating mb-3">
+          <input type="password" class="form-control" placeholder="PW" v-model="password">
+          <label for="floatingInput">비밀번호</label>
+        </div>
+  
+        <div class="form-floating mb-3">
+          <input type="email" class="form-control" placeholder="Email" v-model="email">
+          <label for="floatingInput">이메일</label>
+        </div>
+  
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control" placeholder="Name" v-model="nickname">
+          <label for="floatingInput">닉네임</label>
+        </div>
+  
+        <button type="submit" class="btn w-100 py-2">회원가입</button>
+      </form>
+  
+      <!-- 에러 모달 -->
+      <div class="modal" :class="{ 'is-active': errorModal }">
+        <div class="modal-background" @click="closeModal('error')"></div>
+        <div class="modal-content">
+          <div class="box">
+            <p>항목을 모두 입력하세요.</p>
+          </div>
+        </div>
+        <button class="modal-close is-large" aria-label="close" @click="closeModal('error')"></button>
+      </div>
+  
+      <!-- 성공 모달 -->
+      <div class="modal" :class="{ 'is-active': successModal }">
+        <div class="modal-background" @click="closeModal('success')"></div>
+        <div class="modal-content">
+          <div class="box">
+            <p>회원가입에 성공하셨습니다.</p>
+          </div>
+        </div>
+        <button class="modal-close is-large" aria-label="close" @click="closeModal('success')"></button>
+      </div>
+    </div>
+</template>
+  
+  <script setup>
+  import { ref } from "vue";
+  import { useRouter } from "vue-router";
+  import axios from "axios";
+  
+  const router = useRouter();
+  
+  const id = ref('');
+  const password = ref('');
+  const email = ref('');
+  const nickname = ref('');
+  
+  const successModal = ref(false);
+  const errorModal = ref(false);
+  
+  const userRegist = () => {
     // 입력 필드가 비어 있는지 확인
     if (!id.value || !password.value || !email.value || !nickname.value) {
         errorModal.value = true; // 에러 모달 표시
@@ -29,75 +83,21 @@ const userRegist = () => {
         console.log('Error 발생: ', error)
     })
 }
-
-const closeModal = (modalType) => {
+  
+  const closeModal = (modalType) => {
     if (modalType === 'error') {
-        errorModal.value = false; // 에러 모달 닫기
+      errorModal.value = false;
     } else if (modalType === 'success') {
-        successModal.value = false; // 회원가입 성공 모달 닫기
-        router.push({ name: 'login' }); // 로그인 페이지로 리다이렉트
+      successModal.value = false;
+      router.push({ name: 'login' });
     }
-}
-
-</script>
-
-<template>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
-    <div class="main">
-        <form>
-            <div class="logo-container">
-                <img class="mb-4" src="@/assets/logo.png" width="200">
-            </div>
-            <h1 class="h3 mb-3 fw-normal">회원가입</h1>
-
-            <div class="form-floating mb-3">
-                <input type="text" class="form-control" placeholder="ID" v-model="id">
-                <label for="floatingInput">아이디</label>
-                <!-- <div v-if="isExistingId" class="form-text text-danger">이미 존재하는 아이디거나 불가능한 아이디 입니다.</div> -->
-            </div>
-
-            <div class="form-floating mb-3">
-                <input type="password" class="form-control" placeholder="PW" v-model="password" >
-                <label for="floatingInput">비밀번호</label>
-            </div>
-
-            <div class="form-floating mb-3">
-                <input type="email" class="form-control" placeholder="Email" v-model="email">
-                <label for="floatingInput">이메일</label>
-            </div>
-
-            <div class="form-floating mb-3">
-                <input type="text" class="form-control" placeholder="Name" v-model="nickname"> 
-                <label for="floatingInput">닉네임</label>
-            </div>
-
-            <button type="button" @click="userRegist" class="btn w-100 py-2">회원가입</button>
-            <!-- 에러 모달 -->
-            <div class="modal" :class="{ 'is-active': errorModal }">
-                <div class="modal-background" @click="()=>closeModal('error')"></div>
-                <div class="modal-content">
-                    <div class="box">
-                        <p>항목을 모두 입력하세요.</p>
-                    </div>
-                </div>
-                <button class="modal-close is-large" aria-label="close" @click="()=>closeModal('error')"></button>
-            </div>
-
-        </form>
-
-        <!-- 모달 -->
-        <div class="modal" :class="{ 'is-active': successModal }">
-            <div class="modal-background" @click="()=>closeModal('success')"></div>
-            <div class="modal-content">
-                <div class="box">
-                    <p>회원가입에 성공하셨습니다.</p>
-                </div>
-            </div>
-            <button class="modal-close is-large" aria-label="close" @click="()=>closeModal('success')"></button>
-        </div>
-
-    </div>
-</template>
+  };
+  
+  const submitForm = () => {
+    userRegist();
+  };
+  
+  </script>
 
 <style scoped>
 .main {

@@ -21,6 +21,7 @@ import MessageRoomDetail from '@/components/message/MessageRoomDetail.vue'
 import { storeToRefs } from "pinia";
 
 import { useMemberStore } from "@/stores/member";
+import UserLogout from "@/components/users/UserLogout.vue"
 
 
 const onlyAuthUser = async (to, from, next) => {
@@ -94,6 +95,11 @@ const router = createRouter({
           path: "myPage",
           name: "myPage",
           component: UserMyPage
+        },
+        {
+          path: "logout",
+          name: "logout",
+          component: UserLogout
         }
       ]
 

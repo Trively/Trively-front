@@ -1,72 +1,73 @@
-<script setup>
-import { ref } from "vue"
-import { storeToRefs } from "pinia"
-import { useRouter } from "vue-router"
-import { useMemberStore } from "@/stores/member"
-import { useMenuStore } from "@/stores/menu"
-
-const router = useRouter()
-
-const memberStore = useMemberStore()
-
-const { isLogin, isLoginError } = storeToRefs(memberStore)
-const { userLogin, getUserInfo } = memberStore
-const { changeMenuState } = useMenuStore()
-
-const loginUser = ref({
-  id: "",
-  password: "",
-})
-
-const login = async () => {
-  await userLogin(loginUser.value)
-  let token = sessionStorage.getItem("accessToken")
-  console.log(token)
-  console.log("isLogin: " + isLogin.value)
-  if (isLogin.value) {
-    getUserInfo(token)
-    changeMenuState()
-    router.replace("/")
-  }
-}
-const goToUserJoin = () => {
-    router.push({ name:'join' })
-}
-</script>
-
 <template>
-
     <div class="main">
-        <form>
-            <div class="logo-container">
-                <img class="mb-4" src="@/assets/logo.png" width="200">
-            </div>
-            
-            <h1 class="h3 mb-3 fw-normal">로그인</h1>
-
-            <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="floatingInput" v-model="loginUser.id" placeholder="Id">
-                <label for="floatingInput">아이디</label>
-            </div>
-            <div class="form-floating">
-                <input type="password" class="form-control" id="floatingPassword" v-model="loginUser.password" placeholder="Password">
-                <label for="floatingPassword">비밀번호</label>
-            </div>
-
-            <div class="form-check text-start my-3">
-                <input class="form-check-input" type="checkbox" value="remember-me" id="flexCheckDefault">
-                <label class="form-check-label" for="flexCheckDefault">
-                    아이디 저장
-                </label>
-            </div>
-            <div class="buttons">
-                <button type="button" @click="login" class="btn w-100 py-2">로그인</button>
-                <button type="button" @click="goToUserJoin" class="btn w-100 py-2">회원가입</button>
-            </div>
-        </form>
-
+      <form @submit.prevent="login">
+        <div class="logo-container">
+          <img class="mb-4" src="@/assets/logo.png" width="200">
+        </div>
+        
+        <h1 class="h3 mb-3 fw-normal">로그인</h1>
+  
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control" id="floatingInput" v-model="loginUser.id" placeholder="Id">
+          <label for="floatingInput">아이디</label>
+        </div>
+        <div class="form-floating">
+          <input type="password" class="form-control" id="floatingPassword" v-model="loginUser.password" placeholder="Password">
+          <label for="floatingPassword">비밀번호</label>
+        </div>
+  
+        <div class="form-check text-start my-3">
+          <input class="form-check-input" type="checkbox" value="remember-me" id="flexCheckDefault">
+          <label class="form-check-label" for="flexCheckDefault">
+            아이디 저장
+          </label>
+        </div>
+        <div class="buttons">
+          <button type="submit" class="btn w-100 py-2">로그인</button>
+          <button type="button" @click="goToUserJoin" class="btn w-100 py-2">회원가입</button>
+        </div>
+      </form>
     </div>
-</template>
+  </template>
+  
+  <script setup>
+  import { ref } from "vue"
+  import { storeToRefs } from "pinia"
+  import { useRouter } from "vue-router"
+  import { useMemberStore } from "@/stores/member"
+  import { useMenuStore } from "@/stores/menu"
+  
+  const router = useRouter()
+  
+  const memberStore = useMemberStore()
+  const menuStore = useMenuStore()
+  
+  const { isLogin, isLoginError } = storeToRefs(memberStore)
+  const { userLogin, getUserInfo } = memberStore
+  const { changeMenuState } = menuStore
+  
+  const loginUser = ref({
+    id: "",
+    password: "",
+  })
+  
+  const login = async () => {
+    await userLogin(loginUser.value)
+    let token = sessionStorage.getItem("accessToken")
+    console.log(token)
+    console.log("isLogin: " + isLogin.value)
+    if (isLogin.value) {
+      getUserInfo(token)
+      changeMenuState()
+      router.replace("/")
+    }
+  }
+  
+  const goToUserJoin = () => {
+    router.push({ name:'join' })
+  }
+  </script>
+
 
 <style scoped>
 .main {
