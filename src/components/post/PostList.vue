@@ -4,7 +4,10 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 import PostListItem from "@/components/post/item/PostListItem.vue";
 import BoardList from "@/components/post/BoardList.vue";
+import { useMemberStore } from "@/stores/member"
 
+  
+const memberStore = useMemberStore()
 const { VITE_POST_BASE_URL } = import.meta.env;
 const router = useRouter();
 const posts = ref([]);
@@ -53,7 +56,7 @@ onMounted(() => {
           <div class="col-lg-10">
             <div class="row align-self-center mb-2">
               <div class="col-md-2 text-start">
-                <button type="button" class="btn btn-success btn-sm" @click="moveWrite">
+                <button type="button" class="btn btn-success btn-sm" @click="moveWrite" v-if="memberStore.userInfo">
                   글쓰기
                 </button>
               </div>
