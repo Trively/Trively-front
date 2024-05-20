@@ -2,7 +2,9 @@
 import { ref, defineProps, watch, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
+import { localAxios } from "@/util/http-common";
 
+const local = localAxios();
 const { VITE_POST_BASE_URL } = import.meta.env;
 
 const router = useRouter();
@@ -58,8 +60,8 @@ watch(
 );
 
 const getPost = () => {
-  axios
-    .get(`${VITE_POST_BASE_URL}/${postId.value}`)
+  local
+    .get(`/post/${postId.value}`)
     .then((response) => {
       post.value = response.data.data.post;
     })
@@ -75,8 +77,8 @@ const getPost = () => {
 const boards = ref([]);
 
 const ListBoards = () => {
-  axios
-    .get("http://localhost:80/api/board")
+  local
+    .get('/board')
     .then((response) => {
       boards.value = response.data.data.boards;
     })
@@ -98,8 +100,8 @@ const onSubmit = () => {
 };
 
 const writeArticle = () => {
-  axios
-    .post(VITE_POST_BASE_URL, {
+  local
+    .post('/post', {
       title: post.value.title,
       content: post.value.content,
       boardName: post.value.boardName,

@@ -3,7 +3,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios"
 
-const { VITE_USER_BASE_URL } = import.meta.env
+const { VITE_MEMBER_BASE_URL } = import.meta.env
 
 const router = useRouter();
 
@@ -21,7 +21,7 @@ const userRegist = () => {
         errorModal.value = true; // 에러 모달 표시
         return; // 회원가입 함수 종료
     }
-    axios.post("http://localhost:80/api/member", { id: id.value, password: password.value, email: email.value, nickname: nickname.value })
+    axios.post("http://localhost:80/api/member/join", { id: id.value, password: password.value, email: email.value, nickname: nickname.value })
         .then(response => {
             successModal.value = true; // 회원가입 성공 시 상태 변수 설정
         })

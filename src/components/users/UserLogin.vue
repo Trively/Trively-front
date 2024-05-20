@@ -1,27 +1,36 @@
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import axios from "axios"
+import { ref } from "vue"
+import { storeToRefs } from "pinia"
+import { useRouter } from "vue-router"
+import { useMemberStore } from "@/stores/member"
+import { useMenuStore } from "@/stores/menu"
 
-const { VITE_USER_BASE_URL } = import.meta.env
 const router = useRouter()
 
+const memberStore = useMemberStore()
+
+const { isLogin, isLoginError } = storeToRefs(memberStore)
+const { userLogin, getUserInfo } = memberStore
+const { changeMenuState } = useMenuStore()
+
+const loginUser = ref({
+  id: "",
+  password: "",
+})
+
+const login = async () => {
+  await userLogin(loginUser.value)
+  let token = sessionStorage.getItem("accessToken")
+  console.log(token)
+  console.log("isLogin: " + isLogin.value)
+  if (isLogin.value) {
+    getUserInfo(token)
+    changeMenuState()
+    router.replace("/")
+  }
+}
 const goToUserJoin = () => {
     router.push({ name:'join' })
-}
-
-const id = ref('')
-const password = ref('')
-
-
-const getLogin = () => {
-    axios.post("http://localhost:80/api/member/login", { id: id.value, password: password.value })
-        .then(response => {
-            router.push({name: 'home'})
-        })
-        .catch(error => {
-        console.log('Error 발생: ', error);
-    })
 }
 </script>
 
@@ -36,11 +45,11 @@ const getLogin = () => {
             <h1 class="h3 mb-3 fw-normal">로그인</h1>
 
             <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="floatingInput" v-model="id" placeholder="Id">
+                <input type="text" class="form-control" id="floatingInput" v-model="loginUser.id" placeholder="Id">
                 <label for="floatingInput">아이디</label>
             </div>
             <div class="form-floating">
-                <input type="password" class="form-control" id="floatingPassword" v-model="password" placeholder="Password">
+                <input type="password" class="form-control" id="floatingPassword" v-model="loginUser.password" placeholder="Password">
                 <label for="floatingPassword">비밀번호</label>
             </div>
 
@@ -51,7 +60,7 @@ const getLogin = () => {
                 </label>
             </div>
             <div class="buttons">
-                <button type="button" @click="getLogin" class="btn w-100 py-2">로그인</button>
+                <button type="button" @click="login" class="btn w-100 py-2">로그인</button>
                 <button type="button" @click="goToUserJoin" class="btn w-100 py-2">회원가입</button>
             </div>
         </form>
