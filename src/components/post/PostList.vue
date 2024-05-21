@@ -14,7 +14,7 @@ const posts = ref([]);
 
 const listPosts = () => {
   local
-    .get(VITE_POST_BASE_URL)
+    .get("/post")
     .then((response) => {
       posts.value = response.data.data.posts;
     })
