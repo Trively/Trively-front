@@ -10,9 +10,9 @@ async function userConfirm(param, success, fail) {
   // });
 }
 
-async function findById(userid, success, fail) {
+async function findById(success, fail) {
   local.defaults.headers["Authorization"] = sessionStorage.getItem("accessToken");
-  await local.get(`/member/info/${userid}`).then(success).catch(fail);
+  await local.get(`/member/info`).then(success).catch(fail);
 }
 
 async function tokenRegeneration(user, success, fail) {

@@ -6,7 +6,7 @@ import PostFormItem from "@/components/post/item/PostFormItem.vue";
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-lg-10">
-        <h2 class="my-3 py-3 shadow-sm bg-light text-center">
+        <h2 class="title my-3 py-3 shadow-sm bg-white text-center">
           <mark class="sky">글쓰기</mark>
         </h2>
       </div>
@@ -19,6 +19,9 @@ import PostFormItem from "@/components/post/item/PostFormItem.vue";
 
 <style scoped>
 mark {
-  background-color: rgb(151, 173, 236); /* 원하는 배경색으로 변경 */
+  background-color: rgb(255, 255, 255); /* 원하는 배경색으로 변경 */
+}
+.title{
+  border-radius: 10px;
 }
 </style>

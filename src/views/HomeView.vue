@@ -22,7 +22,7 @@ function moveMap() {
           <!-- 메인 좌측 (여행지 선택) -->
           <div class="col-6 position-relative overflow-hidden p-3 m-1 text-center">
             <div class="col-md-15 mx-auto my-5">
-              <h1>{{ memberStore.userInfo ? `${memberStore.userInfo.nickname} 님, 여행을 떠나볼까요?` : '여행을 떠나볼까요?' }}</h1>
+              <h1>{{ memberStore.userInfo ? `${memberStore.userInfo.nickname}님, 여행을 떠나볼까요?` : '여행을 떠나볼까요?' }}</h1>
               <div class="mt-5 text-center">
                 <img style="width: 300px" src="@/assets/traveler.png" alt="" />
               </div>

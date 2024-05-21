@@ -51,7 +51,7 @@ onMounted(() => {
       <div class="col-lg-9">
         <div class="row justify-content-center">
           <div class="col-lg-10">
-            <h2 class="my-3 py-3 text-center">글목록</h2>
+            <h2 class="my-3 py-3 text-center">글 목록</h2>
           </div>
           <div class="col-lg-10-2">
             <div class="row align-self-center mb-2">

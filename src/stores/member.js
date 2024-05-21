@@ -46,7 +46,6 @@ export const useMemberStore = defineStore("memberStore", () => {
     let decodeToken = jwtDecode(token)
     console.log(decodeToken)
     await findById(
-      decodeToken.userId,
       (response) => {
         if (response.status === httpStatusCode.OK) {
           userInfo.value = response.data.userInfo

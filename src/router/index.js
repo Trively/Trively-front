@@ -22,8 +22,10 @@ import { storeToRefs } from "pinia";
 
 import { useMemberStore } from "@/stores/member";
 import UserLogout from "@/components/users/UserLogout.vue"
-import UserScrap from '@/components/users/UserScrap.vue'
-import UserPost from '@/components/users/UserPost.vue'
+import UserMyScrap from '@/components/users/UserMyScrap.vue'
+import UserMyPost from '@/components/users/UserMyPost.vue'
+import UserMyComment from '@/components/users/UserMyComment.vue'
+import UserMyInfo from '@/components/users/UserMyInfo.vue'
 
 
 const onlyAuthUser = async (to, from, next) => {
@@ -104,15 +106,27 @@ const router = createRouter({
             {
               path: "scrap",
               name: "myScrap",
-              component: UserScrap,
+              component: UserMyScrap,
               beforeEnter: onlyAuthUser,
             },
             {
               path: "post",
               name: "myPost",
-              component: UserPost,
+              component: UserMyPost,
               beforeEnter: onlyAuthUser,
-            }
+            },
+            {
+              path: "comment",
+              name: "myComment",
+              component: UserMyComment,
+              beforeEnter: onlyAuthUser,
+            },
+            {
+              path: "info",
+              name: "info",
+              component: UserMyInfo,
+              beforeEnter: onlyAuthUser,
+            },
           ]
         },
         {

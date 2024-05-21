@@ -131,6 +131,7 @@ function onDeleteArticle() {
 
 <style scoped>
 .container {
+  margin-top: 20px;
   width: 100%;
 }
 

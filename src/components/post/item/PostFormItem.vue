@@ -148,7 +148,7 @@ onMounted(() => {
       />
     </div> -->
     <div class="mb-3">
-      <label for="board" class="form-label">카테고리 선택:</label>
+      <label for="board" class="form-label">카테고리:</label>
       <select class="form-select" v-model="post.boardName">
         <option disabled value="">카테고리 선택</option>
         <option v-for="board in boards" :key="board.boardId" :value="board.boardName">
@@ -181,7 +181,7 @@ onMounted(() => {
       <button type="submit" class="btn btn-primary mb-3" v-if="type === 'regist'">글작성</button>
       <button type="submit" class="btn btn-success mb-3" v-else>글수정</button>
       <button type="button" class="btn btn-secondary mb-3 ms-1" @click="moveList">
-        목록으로이동...
+        목록
       </button>
     </div>
   </form>

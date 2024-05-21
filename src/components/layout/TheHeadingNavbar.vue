@@ -68,7 +68,7 @@ const logout = () => {
                 <router-link class="nav-link" to="/message">쪽지</router-link>
               </li>
               <li class="nav-item">
-                <router-link class="nav-link" to="/member/myPage">마이페이지</router-link>
+                <router-link class="nav-link" to="/member/myPage/info">마이페이지</router-link>
               </li>
               <li class="nav-item">
                 <router-link class="nav-link" to="/" @click.prevent="logout">로그아웃</router-link>

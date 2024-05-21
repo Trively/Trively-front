@@ -142,7 +142,8 @@ const togglePlanList = () => {
 }
 
 .btn-hover {
-    width: 200px;
+    width: 130px;
+    height: 30px;
     font-size: 16px;
     font-weight: 600;
     color: #fff;
