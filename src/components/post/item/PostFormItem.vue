@@ -1,16 +1,15 @@
 <script setup>
 import { ref, defineProps, watch, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import axios from "axios";
 import { localAxios } from "@/util/http-common";
+import Swal from "sweetalert2";
 
 const local = localAxios();
-const { VITE_POST_BASE_URL } = import.meta.env;
 
 const router = useRouter();
 const route = useRoute();
 const props = defineProps({ type: String });
-const postId = ref(route.params.postId)
+const postId = ref(route.params.postId);
 
 const post = ref({
   title: "",
@@ -70,7 +69,6 @@ const getPost = () => {
     });
 };
 
-
 /**
  * 카테고리
  */
@@ -78,7 +76,7 @@ const boards = ref([]);
 
 const ListBoards = () => {
   local
-    .get('/board')
+    .get("/board")
     .then((response) => {
       boards.value = response.data.data.boards;
     })
@@ -88,12 +86,21 @@ const ListBoards = () => {
 };
 
 const onSubmit = () => {
-  if(selectedBoardErrMsg.value){
-    alert(selectedBoardErrMsg.value);
-  }else if (subjectErrMsg.value) {
-    alert(subjectErrMsg.value);
+  if (selectedBoardErrMsg.value) {
+    Swal.fire({
+      icon: "warning",
+      title: selectedBoardErrMsg.value,
+    });
+  } else if (subjectErrMsg.value) {
+    Swal.fire({
+      icon: "warning",
+      title: subjectErrMsg.value,
+    });
   } else if (contentErrMsg.value) {
-    alert(contentErrMsg.value);
+    Swal.fire({
+      icon: "warning",
+      title: contentErrMsg.value,
+    });
   } else {
     props.type === "regist" ? writeArticle() : writeArticle();
   }
@@ -101,7 +108,7 @@ const onSubmit = () => {
 
 const writeArticle = () => {
   local
-    .post('/post', {
+    .post("/post", {
       title: post.value.title,
       content: post.value.content,
       boardName: post.value.boardName,
@@ -171,16 +178,8 @@ onMounted(() => {
     </div> -->
 
     <div class="col-auto text-center">
-      <button
-        type="submit"
-        class="btn btn-primary mb-3"
-        v-if="type === 'regist'"
-      >
-        글작성
-      </button>
-      <button type="submit" class="btn btn-success mb-3" v-else>
-        글수정
-      </button>
+      <button type="submit" class="btn btn-primary mb-3" v-if="type === 'regist'">글작성</button>
+      <button type="submit" class="btn btn-success mb-3" v-else>글수정</button>
       <button type="button" class="btn btn-secondary mb-3 ms-1" @click="moveList">
         목록으로이동...
       </button>

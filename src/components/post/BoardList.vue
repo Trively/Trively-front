@@ -21,8 +21,9 @@
 
 <script setup>
 import { ref, onMounted, defineEmits } from "vue";
-import axios from "axios";
+import { localAxios } from "@/util/http-common";
 
+const local = localAxios();
 const { VITE_POST_BASE_URL } = import.meta.env;
 
 const boards = ref([]);
@@ -31,7 +32,7 @@ const emit = defineEmits(["selectBoard"]);
 
 //카테고리 조회
 const ListBoards = () => {
-  axios
+  local
     .get("http://localhost:80/api/board")
     .then((response) => {
       boards.value = response.data.data.boards;
@@ -46,7 +47,7 @@ const selectBoard = (board) => {
   const params = {
     boardId: board ? board.boardId : null, // board가 null이면 전체 게시판 조회
   };
-  axios
+  local
     .get(VITE_POST_BASE_URL, { params })
     .then((response) => {
       emit("selectBoard", response.data.data.posts);
