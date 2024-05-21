@@ -1,9 +1,10 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch, inject } from "vue";
-import axios from "axios";
 import { storeToRefs } from "pinia";
 import { useMapTourList } from "@/stores/mapTour";
+import { localAxios } from "@/util/http-common";
 
+const local = localAxios();
 const searchArea = ref("0");
 const searchKeyword = ref("");
 const selectedTypes = ref([]);
@@ -14,14 +15,14 @@ const isLoading = ref(false);
 const mapTourList = useMapTourList();
 const { setMarkerList } = mapTourList;
 const { tripList, markerList, planList } = storeToRefs(mapTourList);
-const map = ref(inject('map'));
+const map = ref(inject("map"));
 
-const showPlanList = ref(inject('showPlanList'));
+const showPlanList = ref(inject("showPlanList"));
 
 //카테고리 조회
 const ListAreas = () => {
-  axios
-    .get("http://localhost:80/api/board")
+  local
+    .get("/board")
     .then((response) => {
       areas.value = response.data.data.boards;
     })
@@ -31,8 +32,8 @@ const ListAreas = () => {
 };
 
 const updateTripList = () => {
-  axios
-    .get(`http://localhost:80/api/attraction?typeIds=${selectedTypes.value}`, {
+  local
+    .get(`/attraction?typeIds=${selectedTypes.value}`, {
       params: {
         sidoCode: searchArea.value,
         search: searchKeyword.value,
@@ -50,8 +51,8 @@ const updateTripList = () => {
 
 const search = () => {
   markerList.value = [];
-  axios
-    .get(`http://localhost:80/api/attraction?typeIds=${selectedTypes.value}`, {
+  local
+    .get(`/attraction?typeIds=${selectedTypes.value}`, {
       params: {
         sidoCode: searchArea.value,
         search: searchKeyword.value,
@@ -110,7 +111,7 @@ const moveCenter = (lat, lng) => {
 const addToPlan = (trip) => {
   // 새로운 여행지의 id 생성
   const newId = generateUniqueId();
-  
+
   // 새로운 여행지 객체 생성
   const newTrip = {
     id: newId, // 고유한 id 부여
@@ -123,20 +124,19 @@ const addToPlan = (trip) => {
     typeId: trip.typeId,
     latitude: trip.latitude,
     longitude: trip.longitude,
-    date: '', // 여행일정 초기값 설정
+    date: "", // 여행일정 초기값 설정
   };
 
-
   planList.value.push(newTrip);
-   // PlanList가 닫혀있으면 열기메
-   if (!showPlanList.value) {
+  // PlanList가 닫혀있으면 열기메
+  if (!showPlanList.value) {
     showPlanList.value = true;
   }
 };
 
 // 고유한 id 생성 함수
 const generateUniqueId = () => {
-  return '_' + Math.random().toString(36).substr(2, 9);
+  return "_" + Math.random().toString(36).substr(2, 9);
 };
 
 onMounted(() => {
@@ -271,7 +271,7 @@ onUnmounted(() => {
               <td><img :src="trip.image1 || '/src/assets/logo.png'" width="100px" /></td>
               <td>{{ trip.name }}</td>
               <td>{{ trip.address }} {{ trip.addr2 }}</td>
-              <td>  <button class="custom-btn btn-11"  @click="addToPlan(trip)">추가</button></td>
+              <td><button class="custom-btn btn-11" @click="addToPlan(trip)">추가</button></td>
             </tr>
           </tbody>
         </table>
@@ -312,7 +312,7 @@ table.table .table-contents:hover {
   /* height: 40px;
   padding: 10px 25px; */
   border: 2px solid #000;
-  font-family: 'Lato', sans-serif;
+  font-family: "Lato", sans-serif;
   font-weight: 500;
   background: transparent;
   cursor: pointer;
@@ -326,31 +326,41 @@ table.table .table-contents:hover {
   transition: all 0.3s ease;
 }
 .btn-11:hover {
-   background: #000;
+  background: #000;
   color: #fff;
 }
 .btn-11:before {
-    position: absolute;
-    content: '';
-    display: inline-block;
-    top: -180px;
-    left: 0;
-    width: 30px;
-    height: 100%;
-    background-color: #fff;
-    animation: shiny-btn1 3s ease-in-out infinite;
+  position: absolute;
+  content: "";
+  display: inline-block;
+  top: -180px;
+  left: 0;
+  width: 30px;
+  height: 100%;
+  background-color: #fff;
+  animation: shiny-btn1 3s ease-in-out infinite;
 }
-.btn-11:active{
-  box-shadow:  4px 4px 6px 0 rgba(255,255,255,.3),
-              -4px -4px 6px 0 rgba(116, 125, 136, .2), 
-    inset -4px -4px 6px 0 rgba(255,255,255,.2),
-    inset 4px 4px 6px 0 rgba(0, 0, 0, .2);
+.btn-11:active {
+  box-shadow: 4px 4px 6px 0 rgba(255, 255, 255, 0.3), -4px -4px 6px 0 rgba(116, 125, 136, 0.2),
+    inset -4px -4px 6px 0 rgba(255, 255, 255, 0.2), inset 4px 4px 6px 0 rgba(0, 0, 0, 0.2);
 }
 
 @-webkit-keyframes shiny-btn1 {
-    0% { -webkit-transform: scale(0) rotate(45deg); opacity: 0; }
-    80% { -webkit-transform: scale(0) rotate(45deg); opacity: 0.5; }
-    81% { -webkit-transform: scale(4) rotate(45deg); opacity: 1; }
-    100% { -webkit-transform: scale(50) rotate(45deg); opacity: 0; }
+  0% {
+    -webkit-transform: scale(0) rotate(45deg);
+    opacity: 0;
+  }
+  80% {
+    -webkit-transform: scale(0) rotate(45deg);
+    opacity: 0.5;
+  }
+  81% {
+    -webkit-transform: scale(4) rotate(45deg);
+    opacity: 1;
+  }
+  100% {
+    -webkit-transform: scale(50) rotate(45deg);
+    opacity: 0;
+  }
 }
 </style>

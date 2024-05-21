@@ -1,60 +1,72 @@
 <script setup>
-import { ref } from 'vue'
-import { useMapTourList } from '@/stores/mapTour'
-import draggable from 'vuedraggable'
+import { ref } from "vue";
+import { useMapTourList } from "@/stores/mapTour";
+import draggable from "vuedraggable";
 import { localAxios } from "@/util/http-common";
+import Swal from "sweetalert2";
 
 const mapTourList = useMapTourList();
 const { setPlanToMarkerList } = mapTourList;
-const { planList } = useMapTourList()
+const { planList } = useMapTourList();
 const local = localAxios();
 
-const showModal = ref(false)
-const title = ref('')
+const showModal = ref(false);
+const title = ref("");
 
 const removeItem = (index) => {
   planList.splice(index, 1);
-  updateMarker()
-}
+  updateMarker();
+};
 
 const updateMarker = () => {
-  setPlanToMarkerList()
-} 
+  setPlanToMarkerList();
+};
 
 const savePlan = () => {
-  if(!title.value.trim()) {
-    alert('제목을 입력해주세요!');
+  if (!title.value.trim()) {
+    Swal.fire({
+      icon: "warning",
+      title: "제목을 입력해주세요!",
+    });
     return;
   }
 
   const plans = planList.map((plan, index) => ({
     attractionId: plan.attractionId,
     planDate: plan.date,
-    orders: index
-  }))
+    orders: index,
+  }));
   const payload = {
     title: title.value,
-    plans
-  }
+    plans,
+  };
 
   local
-    .post('/plan', payload)
+    .post("/plan", payload)
     .then((response) => {
-      alert('계획이 성공적으로 저장되었습니다!')
-      showModal.value = false
+      Swal.fire({
+        title: "계획이 성공적으로 저장되었습니다!",
+        icon: "success",
+      });
+      showModal.value = false;
+      //상세 페이지로 이동
     })
     .catch((error) => {
-      console.error('요청 중 오류 발생: ', error)
-      alert('로그인 후 다시 시도해주세요!')
-    })
-}
+      console.error("요청 중 오류 발생: ", error);
+      Swal.fire({
+        icon: "error",
+        title: "로그인 후 다시 시도해주세요!",
+      });
+    });
+};
 </script>
 
 <template>
   <div>
     <button @click="$emit('close')" class="btn btn-sm btn-danger close-button">닫기</button>
-    <button @click="updateMarker" 
-              class="btn btn-sm btn-success remove-button">계획 마커 표시</button>
+    <button @click="updateMarker" class="btn btn-sm btn-success remove-button">
+      계획 마커 표시
+    </button>
 
     <div class="col-10 mx-auto mb-5">
       <div class="display-6 mb-4 text-center" role="alert"><h3>나의 여행 계획</h3></div>
@@ -69,27 +81,39 @@ const savePlan = () => {
       >
         <template #item="{ element }">
           <div class="plan-item-wrapper">
-            <li :key="element.id" class="plan-item" style="list-style-type: none;">
+            <li :key="element.id" class="plan-item" style="list-style-type: none">
               <img :src="element.image1 || '/src/assets/logo.png'" width="100px" />
               <div>{{ element.name }}</div>
               <div>{{ element.address }} {{ element.addr2 }}</div>
-              <br>
+              <br />
               <label for="travel-schedule">여행일정</label>
               <input type="date" class="form-control" v-model="element.date" />
-              <button @click="removeItem(index)" 
-              class="btn btn-sm btn-danger remove-button">x</button>
+              <button @click="removeItem(index)" class="btn btn-sm btn-danger remove-button">
+                x
+              </button>
             </li>
           </div>
         </template>
       </draggable>
-      <button v-if="planList.length > 0" @click="showModal = true" class="btn btn-sm btn-primary btn-save">저장</button>
-    </div>  
+      <button
+        v-if="planList.length > 0"
+        @click="showModal = true"
+        class="btn btn-sm btn-primary btn-save"
+      >
+        저장
+      </button>
+    </div>
     <div v-if="showModal" class="modal">
       <div class="modal-content">
         <span @click="showModal = false" class="close">&times;</span>
-        <h2>멋있는 일정의</h2>
+        <h2>두근거리는 일정의</h2>
         <h2>제목을 지어주세요!</h2>
-        <input type="text" v-model="title" placeholder="여행 계획 제목을 입력하세요" class="form-control"/>
+        <input
+          type="text"
+          v-model="title"
+          placeholder="여행 계획 제목을 입력하세요"
+          class="form-control"
+        />
         <button @click="savePlan" class="btn btn-sm btn-success mt-2">저장</button>
       </div>
     </div>

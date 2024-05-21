@@ -1,8 +1,10 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import axios from "axios"
 import { useRoute, useRouter } from "vue-router";
+import { localAxios } from "@/util/http-common";
+import Swal from "sweetalert2";
 
+const local = localAxios();
 const { VITE_POST_BASE_URL } = import.meta.env;
 const route = useRoute();
 const router = useRouter();
@@ -16,10 +18,10 @@ onMounted(() => {
 });
 
 const getPost = () => {
-  axios
+  local
     .get(`${VITE_POST_BASE_URL}/${postId.value}`)
     .then((response) => {
-      post.value = response.data.data.post
+      post.value = response.data.data.post;
     })
     .catch((error) => {
       console.error("검색 중 오류 발생:", error);
@@ -36,10 +38,13 @@ function moveModify() {
 
 function onDeleteArticle() {
   if (confirm("정말 삭제하시겠습니까?")) {
-    axios
+    local
       .delete(`${VITE_POST_BASE_URL}/${postId.value}`)
       .then(() => {
-        alert("정상적으로 삭제되었습니다.");
+        Swal.fire({
+          title: "정상적으로 삭제되었습니다.",
+          icon: "success",
+        });
         router.push({ name: "postList" });
       })
       .catch((error) => {
@@ -47,13 +52,12 @@ function onDeleteArticle() {
       });
   }
 }
-
 </script>
 
 <template>
   <div class="container">
-    <div class="position-relative"> 
-      <div class="fixed-top-container position-absolute top-0 end-0"> 
+    <div class="position-relative">
+      <div class="fixed-top-container position-absolute top-0 end-0">
         <div class="col-md align-self-center text-end">
           <div class="image-container">
             <!-- <img :src="attraction.firstImage" class="img-fluid rounded" alt="Attraction Image"> -->
@@ -80,7 +84,6 @@ function onDeleteArticle() {
 
         <div class="row">
           <div class="col-md">
-
             <div class="text-dark">
               <div v-html="post.content"></div>
               <!-- <p>이 글이 도움이 되었다면?</p>
@@ -88,7 +91,7 @@ function onDeleteArticle() {
                 <font-awesome-icon icon="fa-solid fa-thumbs-up" /> {{ articles.likes }}
               </button> -->
             </div>
-            <hr>
+            <hr />
             <!-- <div class="mt-3">
               <template v-if="userInfo != null">
                 <BoardComment />
@@ -108,12 +111,10 @@ function onDeleteArticle() {
                 글목록
               </button>
               <!-- TODO: 사용자 정보 확인하여 버튼 여부 결정 필요-->
-              <button type="button" class="btn btn-secondary mb-3 ms-1"
-                @click="moveModify">
+              <button type="button" class="btn btn-secondary mb-3 ms-1" @click="moveModify">
                 글수정
               </button>
-              <button type="button" class="btn btn-danger mb-3 ms-1"
-                @click="onDeleteArticle">
+              <button type="button" class="btn btn-danger mb-3 ms-1" @click="onDeleteArticle">
                 글삭제
               </button>
               <!-- v-if="userInfo != null && articles.userId === userInfo.id"  -->
@@ -149,7 +150,6 @@ function onDeleteArticle() {
   align-items: flex-end;
   height: 200px;
 }
-
 
 .text-center {
   text-align: center;

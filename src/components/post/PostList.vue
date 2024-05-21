@@ -1,16 +1,17 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import axios from "axios";
 import PostListItem from "@/components/post/item/PostListItem.vue";
 import BoardList from "@/components/post/BoardList.vue";
+import { localAxios } from "@/util/http-common";
 
+const local = localAxios();
 const { VITE_POST_BASE_URL } = import.meta.env;
 const router = useRouter();
 const posts = ref([]);
 
 const listPosts = () => {
-  axios
+  local
     .get(VITE_POST_BASE_URL)
     .then((response) => {
       posts.value = response.data.data.posts;
@@ -30,7 +31,7 @@ const moveWrite = () => {
 
 const moveDetail = (postId) => {
   router.push({ name: "postDetail", params: { postId: postId.toString() } });
-}
+};
 
 onMounted(() => {
   listPosts();
@@ -70,7 +71,12 @@ onMounted(() => {
                 </tr>
               </thead>
               <tbody>
-                <PostListItem v-for="post in posts" :key="post.postId" :post="post" @click="moveDetail(post.postId)"></PostListItem>
+                <PostListItem
+                  v-for="post in posts"
+                  :key="post.postId"
+                  :post="post"
+                  @click="moveDetail(post.postId)"
+                ></PostListItem>
               </tbody>
             </table>
           </div>
