@@ -5,7 +5,6 @@ import { useMemberStore } from "@/stores/member";
 import { storeToRefs } from "pinia";
 // import { useRoute } from "vue-router";
 
-
 const menuStore = useMenuStore();
 const memberStore = useMemberStore();
 
@@ -65,6 +64,9 @@ const logout = () => {
             </li>
             <template v-if="memberStore.userInfo">
               <li class="nav-item">
+                <router-link class="nav-link" to="/myPlan">여행계획</router-link>
+              </li>
+              <li class="nav-item">
                 <router-link class="nav-link" to="/message">쪽지</router-link>
               </li>
               <li class="nav-item">
@@ -82,7 +84,6 @@ const logout = () => {
                 <router-link class="nav-link" to="/member/join">회원가입</router-link>
               </li>
             </template>
-            
           </ul>
         </div>
       </div>

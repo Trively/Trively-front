@@ -17,6 +17,8 @@ export const useMapTourList = defineStore('mapTourList',()=>  {
           lng: trip.latitude,
           infoWindow: {
             content: trip.name,
+            image: trip.image1,
+            address: trip.address,
             visible: false,
           },
         });
@@ -34,6 +36,8 @@ export const useMapTourList = defineStore('mapTourList',()=>  {
           lng: trip.latitude,
           infoWindow: {
             content: trip.name,
+            image: trip.image1,
+            address: trip.address,
             visible: false,
           },
         });
