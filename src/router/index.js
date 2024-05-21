@@ -25,6 +25,8 @@ import UserLogout from "@/components/users/UserLogout.vue"
 import UserScrap from '@/components/users/UserScrap.vue'
 import UserPost from '@/components/users/UserPost.vue'
 
+import MyPlan from '@/views/MyPlan.vue'
+
 
 const onlyAuthUser = async (to, from, next) => {
   const memberStore = useMemberStore();
@@ -154,6 +156,11 @@ const router = createRouter({
       path: "/map",
       name: "map",
       component: MapView,
+    },
+    {
+      path: "/myPlan",
+      name: "myPlan",
+      component: MyPlan,
     }
 
   ]
