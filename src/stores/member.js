@@ -3,7 +3,7 @@ import { useRouter } from "vue-router"
 import { storeToRefs } from "pinia"
 import { defineStore } from "pinia"
 import { jwtDecode } from "jwt-decode"
-
+import { createPersistedState } from "pinia-plugin-persistedstate";
 import { userConfirm, findById, tokenRegeneration, logout } from "@/api/user"
 import { httpStatusCode } from "@/util/http-status"
 
@@ -29,6 +29,7 @@ export const useMemberStore = defineStore("memberStore", () => {
           isValidToken.value = true
           sessionStorage.setItem("accessToken", accessToken)
           sessionStorage.setItem("refreshToken", refreshToken)
+          
         }
       },
       (error) => {
@@ -136,5 +137,9 @@ export const useMemberStore = defineStore("memberStore", () => {
     getUserInfo,
     tokenRegenerate,
     userLogout,
+  };
+}, {
+  persist: {
+    storage: sessionStorage
   }
-})
+});

@@ -3,8 +3,10 @@ import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { localAxios } from "@/util/http-common";
 import Swal from "sweetalert2";
+import { useMemberStore } from "@/stores/member"
 
 const local = localAxios();
+const memberStore = useMemberStore()
 const { VITE_POST_BASE_URL } = import.meta.env;
 const route = useRoute();
 const router = useRouter();
@@ -109,15 +111,16 @@ function onDeleteArticle() {
             <div class="d-flex justify-content-end">
               <button type="button" class="btn btn-outline-secondary mb-3" @click="moveList">
                 글목록
-              </button>
-              <!-- TODO: 사용자 정보 확인하여 버튼 여부 결정 필요-->
-              <button type="button" class="btn btn-secondary mb-3 ms-1" @click="moveModify">
+              </button>            
+              <button type="button" class="btn btn-secondary mb-3 ms-1"
+                @click="moveModify" v-if="memberStore.userInfo && memberStore.userInfo.memberId === post.memberId">
                 글수정
               </button>
-              <button type="button" class="btn btn-danger mb-3 ms-1" @click="onDeleteArticle">
+              <button type="button" class="btn btn-danger mb-3 ms-1"
+                @click="onDeleteArticle" v-if="memberStore.userInfo && memberStore.userInfo.memberId === post.memberId ">
                 글삭제
               </button>
-              <!-- v-if="userInfo != null && articles.userId === userInfo.id"  -->
+
             </div>
           </div>
         </div>

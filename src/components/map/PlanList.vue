@@ -4,7 +4,11 @@ import { useMapTourList } from "@/stores/mapTour";
 import draggable from "vuedraggable";
 import { localAxios } from "@/util/http-common";
 import Swal from "sweetalert2";
-
+import { useMapTourList } from '@/stores/mapTour'
+import draggable from 'vuedraggable'
+import { useMemberStore } from "@/stores/member"
+  
+const memberStore = useMemberStore()
 const mapTourList = useMapTourList();
 const { setPlanToMarkerList } = mapTourList;
 const { planList } = useMapTourList();
@@ -117,6 +121,8 @@ const savePlan = () => {
         <button @click="savePlan" class="btn btn-sm btn-success mt-2">저장</button>
       </div>
     </div>
+      <button  v-if="planList.length > 0 && memberStore.userInfo" class="btn btn-sm btn-primary btn-save">저장</button>
+    </div>  
   </div>
 </template>
 

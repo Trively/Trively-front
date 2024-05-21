@@ -69,9 +69,26 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 선택된 리스트 아이템 스타일 */
+.list-group-item {
+  border: none; /* 테두리 제거 */
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-width: none;
+}
+
+.list-group-item:hover {
+  background-color: #f1f1f1; /* 마우스 오버 시 배경색 */
+}
+
 .list-group-item.active {
-  background-color: #007bff;
-  color: white;
+  background-color: #7685b5; /* 선택된 항목 배경색 */
+  color: white; /* 선택된 항목 텍스트 색상 */
+}
+
+.list-group-item.active:hover {
+  background-color: #5a6b96; /* 선택된 항목에 대한 마우스 오버 시 배경색 */
 }
 </style>
