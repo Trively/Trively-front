@@ -40,6 +40,7 @@ const savePlan = () => {
     attractionId: plan.attractionId,
     planDate: plan.date,
     orders: index,
+    open: plan.open || false,
   }));
   const payload = {
     title: title.value,
@@ -47,11 +48,7 @@ const savePlan = () => {
   };
 
   if (planListId.value != null) {
-    const payload = {
-      title: title.value,
-      plans,
-      planListId: planListId.value,
-    };
+    payload.planListId = planListId.value;
     local
       .put("/plan", payload)
       .then((response) => {
@@ -116,12 +113,15 @@ onMounted(() => {
         <template #item="{ element }">
           <div class="plan-item-wrapper">
             <li :key="element.id" class="plan-item" style="list-style-type: none">
+              <div style="color: #5a6b96">총 {{ element.planCnt }}명이 계획했어요!</div>
               <img :src="element.image1 || '/src/assets/logo.png'" width="100px" />
               <div>{{ element.name }}</div>
               <div>{{ element.address }} {{ element.addr2 }}</div>
               <br />
-              <label for="travel-schedule">여행일정</label>
+              <label for="travel-schedule">여행일정 공유</label>
+              <input type="checkbox" v-model="element.open" />
               <input type="date" class="form-control" v-model="element.date" />
+              <!-- <label for="toggle-open">공유</label> -->
               <button @click="removeItem(index)" class="btn btn-sm btn-danger remove-button">
                 x
               </button>

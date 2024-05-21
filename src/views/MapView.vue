@@ -53,7 +53,9 @@ const getMyPlan = () => {
             typeId: attractionList.typeId,
             latitude: attractionList.latitude,
             longitude: attractionList.longitude,
+            planCnt:attractionList.planCnt,
             date: plan.planDate, // 계획 날짜 사용
+            open: plan.open,
           };
           planList.value.push(newTrip);
         });

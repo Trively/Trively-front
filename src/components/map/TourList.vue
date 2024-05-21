@@ -134,6 +134,7 @@ const addToPlan = (trip) => {
     typeId: trip.typeId,
     latitude: trip.latitude,
     longitude: trip.longitude,
+    planCnt: trip.planCnt,
     date: "", // 여행일정 초기값 설정
   };
 
