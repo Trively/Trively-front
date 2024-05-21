@@ -102,13 +102,28 @@ const onSubmit = () => {
       title: contentErrMsg.value,
     });
   } else {
-    props.type === "regist" ? writeArticle() : writeArticle();
+    props.type === "regist" ? writeArticle() : modifyArticle();
   }
 };
 
 const writeArticle = () => {
   local
     .post("/post", {
+      title: post.value.title,
+      content: post.value.content,
+      boardName: post.value.boardName,
+    })
+    .then(() => {
+      moveList();
+    })
+    .catch((error) => {
+      console.error("등록 중 오류 발생: ", error);
+    });
+};
+
+const modifyArticle = () => {
+  local
+  .put(`/post/${postId.value}`, {
       title: post.value.title,
       content: post.value.content,
       boardName: post.value.boardName,
