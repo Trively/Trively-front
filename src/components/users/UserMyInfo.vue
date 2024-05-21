@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { localAxios } from '@/util/http-common';
-
+import Swal from "sweetalert2";
 const local = localAxios();
 
 const userData = ref({
@@ -26,20 +26,22 @@ const fetchUserInfo = async () => {
 };
 
 const updateUserInfo = async () => {
-  if (confirm('정보를 수정하시겠습니까?')) {
-    try {
+   
       await local.put('/member/edit', {
         id: userData.value.id,
         password: userData.value.password,
         email: userData.value.email,
         nickname: userData.value.nickname,
+      }).then((response) => {
+        Swal.fire({
+          title : "정보가 수정되었습니다!",
+          icon : "success",
+        });
+      })
+      .catch((error) => {
+        console.error('Error updating user info:', error);
       });
-      alert('정보가 수정되었습니다.');
-    } catch (error) {
-      console.error('Error updating user info:', error);
-      alert('정보 수정 중 오류가 발생했습니다.');
-    }
-  }
+      
 };
 
 const showMessageId = ref(false); // 아이디 변경 메시지

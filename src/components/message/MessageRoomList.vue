@@ -37,7 +37,7 @@
         <div class="modal-overlay" v-if="showModal">
             <div class="modal-container">
                 <div class="modal-header"> 
-                    <h2 class="modal-title">쪽지</h2>
+                    <h2 class="modal-title">To. {{selectedRoomNickname}}님</h2>
                     <button @click="closeModal" class="close-button">x</button>
                 </div>
                 <div class="modal-body">
@@ -56,7 +56,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { localAxios } from "@/util/http-common";
-
+import Swal from "sweetalert2";
 const local = localAxios();
 const showDetail = ref(false);
 const roomId = ref(null);
@@ -144,7 +144,11 @@ const confirmSend = () => {
         .post(`/message/room/${roomId.value}`, {
             content: message.value.content,
         })
-        .then(() => {
+        .then((response) => {
+          Swal.fire({
+          title: "쪽지를 보냈습니다!",
+          icon: "success",
+        });
             closeModal();
             fetchMessages();
         })

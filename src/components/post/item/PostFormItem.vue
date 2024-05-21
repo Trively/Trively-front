@@ -113,7 +113,11 @@ const writeArticle = () => {
       content: post.value.content,
       boardName: post.value.boardName,
     })
-    .then(() => {
+    .then((response) => {
+      Swal.fire({
+        title:"게시글을 작성했습니다!",
+        icon:"success",
+      })
       moveList();
     })
     .catch((error) => {
@@ -128,7 +132,11 @@ const modifyArticle = () => {
       content: post.value.content,
       boardName: post.value.boardName,
     })
-    .then(() => {
+    .then((response) => {
+      Swal.fire({
+        title:"게시글을 수정했습니다!",
+        icon:"success"
+      })
       moveList();
     })
     .catch((error) => {
