@@ -293,7 +293,9 @@ onUnmounted(() => {
 <style scoped>
 .list {
   height: calc(100vh - 70px);
-  overflow: auto;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-width: none;
 }
 
 table.table .table-contents:hover {

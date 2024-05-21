@@ -2,7 +2,7 @@
 </script>
 
 <template>
-<div></div>
+<div>ㅎㅎ 아직 없어요</div>
 </template>
 
 <style scoped>

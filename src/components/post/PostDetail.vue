@@ -21,7 +21,7 @@ onMounted(() => {
 
 const getPost = () => {
   local
-    .get(`${VITE_POST_BASE_URL}/${postId.value}`)
+    .get(`post/${postId.value}`)
     .then((response) => {
       post.value = response.data.data.post;
     })
@@ -41,7 +41,7 @@ function moveModify() {
 function onDeleteArticle() {
   if (confirm("정말 삭제하시겠습니까?")) {
     local
-      .delete(`${VITE_POST_BASE_URL}/${postId.value}`)
+      .delete(`/post/${postId.value}`)
       .then(() => {
         Swal.fire({
           title: "정상적으로 삭제되었습니다.",
@@ -106,9 +106,9 @@ function onDeleteArticle() {
         </div>
         <div class="divider mt-3 mb-3"></div>
 
-        <div class="row">
+        <div class="row justify-content-center">
           <div class="col-md-8">
-            <div class="d-flex justify-content-end">
+            <div class="d-flex justify-content-center">
               <button type="button" class="btn btn-outline-secondary mb-3" @click="moveList">
                 글목록
               </button>            
@@ -117,10 +117,9 @@ function onDeleteArticle() {
                 글수정
               </button>
               <button type="button" class="btn btn-danger mb-3 ms-1"
-                @click="onDeleteArticle" v-if="memberStore.userInfo && memberStore.userInfo.memberId === post.memberId ">
+                @click="onDeleteArticle" v-if="memberStore.userInfo && memberStore.userInfo.memberId === post.memberId">
                 글삭제
               </button>
-
             </div>
           </div>
         </div>
@@ -129,8 +128,10 @@ function onDeleteArticle() {
   </div>
 </template>
 
+
 <style scoped>
 .container {
+  margin-top: 20px;
   width: 100%;
 }
 
@@ -156,5 +157,11 @@ function onDeleteArticle() {
 
 .text-center {
   text-align: center;
+}
+
+.d-flex.justify-content-center {
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 </style>

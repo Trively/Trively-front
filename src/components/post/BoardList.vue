@@ -33,7 +33,7 @@ const emit = defineEmits(["selectBoard"]);
 //카테고리 조회
 const ListBoards = () => {
   local
-    .get("http://localhost:80/api/board")
+    .get("/board")
     .then((response) => {
       boards.value = response.data.data.boards;
     })
@@ -48,7 +48,7 @@ const selectBoard = (board) => {
     boardId: board ? board.boardId : null, // board가 null이면 전체 게시판 조회
   };
   local
-    .get(VITE_POST_BASE_URL, { params })
+    .get("/post", { params })
     .then((response) => {
       emit("selectBoard", response.data.data.posts);
     })
