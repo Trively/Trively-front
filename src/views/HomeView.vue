@@ -1,6 +1,9 @@
 <script setup>
 import { useRoute, useRouter } from "vue-router";
+import { useMemberStore } from "@/stores/member"
 
+  
+const memberStore = useMemberStore()
 const router = useRouter();
 
 function moveMap() {
@@ -18,8 +21,8 @@ function moveMap() {
         <div class="row justify-content-around">
           <!-- 메인 좌측 (여행지 선택) -->
           <div class="col-6 position-relative overflow-hidden p-3 m-1 text-center">
-            <div class="col-md-8 mx-auto my-5">
-              <h1>여행을 떠나볼까요?</h1>
+            <div class="col-md-15 mx-auto my-5">
+              <h1>{{ memberStore.userInfo ? `${memberStore.userInfo.nickname} 님, 여행을 떠나볼까요?` : '여행을 떠나볼까요?' }}</h1>
               <div class="mt-5 text-center">
                 <img style="width: 300px" src="@/assets/traveler.png" alt="" />
               </div>
@@ -81,13 +84,13 @@ function moveMap() {
                 </div>
 
                 <button
-                  class="btn btn-outline-dark mx-auto mt-3"
+                  class="btn btn-outline-dark mx-auto mt-3 btn-jittery"
                   style="background-color: #001e3d; color: white"
                   type="button"
                   id="index-search-btn"
                   @click="moveMap()"
                 >
-                  <i class="bi bi-search"></i> 검색
+                  <i class="bi bi-search"></i> 출발!
                 </button>
               </form>
             </div>
@@ -111,5 +114,45 @@ body {
 .bi {
   vertical-align: -0.125em;
   fill: currentColor;
+}
+.btn-jittery {
+  -webkit-animation: jittery 4s infinite;
+          animation: jittery 4s infinite;
+}
+
+
+@keyframes jittery {
+  5%,
+  50% {
+    transform: scale(1);
+  }
+
+  10% {
+    transform: scale(0.9);
+  }
+
+  15% {
+    transform: scale(1.15);
+  }
+
+  20% {
+    transform: scale(1.15) rotate(-5deg);
+  }
+
+  25% {
+    transform: scale(1.15) rotate(5deg);
+  }
+
+  30% {
+    transform: scale(1.15) rotate(-3deg);
+  }
+
+  35% {
+    transform: scale(1.15) rotate(2deg);
+  }
+
+  40% {
+    transform: scale(1.15) rotate(0);
+  }
 }
 </style>

@@ -1,5 +1,5 @@
 import { localAxios } from "@/util/http-common";
-
+import piniaPersistedstate from "pinia-plugin-persistedstate";
 const local = localAxios();
 
 async function userConfirm(param, success, fail) {

@@ -7,7 +7,7 @@
                 <ul>
                     <li v-for="room in rooms" :key="room.roomId" class="room-item" @click="selectRoom(room.roomId)">
                         <h3>{{ room.nickname }}</h3>
-                        <p>{{ room.recentContent }}</p>
+                        <p v-text="truncateRecentContent(room.recentContent, 15)"></p>
                         <small>{{ new Date(room.recentDateTime).toLocaleString() }}</small>
                     </li>
                 </ul>
@@ -79,7 +79,7 @@ const checkContentLength = () => {
 };
 const truncateRecentContent = (content, maxLength) => {
   if (content.length > maxLength) {
-    return content.substring(0, maxLength) + "...";
+    return content.substring(0, maxLength) + "...더보기";
   }
   return content;
 };
@@ -248,7 +248,7 @@ html, body {
   margin: 0 0 5px 0;
   font-size: 0.9em;
   color: #555;
-  overflow-y: auto; /* 내용 영역 스크롤 */
+  
   max-height: 200px; /* 내용 영역 최대 높이 설정 */
 
 }

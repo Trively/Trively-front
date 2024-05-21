@@ -22,6 +22,8 @@ import { storeToRefs } from "pinia";
 
 import { useMemberStore } from "@/stores/member";
 import UserLogout from "@/components/users/UserLogout.vue"
+import UserScrap from '@/components/users/UserScrap.vue'
+import UserPost from '@/components/users/UserPost.vue'
 
 
 const onlyAuthUser = async (to, from, next) => {
@@ -46,7 +48,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView
+      component: HomeView,
     },
     {
 
@@ -63,6 +65,7 @@ const router = createRouter({
           path: '',
           name: 'postWrite',
           component: PostWrite,
+          beforeEnter: onlyAuthUser,
         },
         {
           path: ':postId',
@@ -73,6 +76,7 @@ const router = createRouter({
           path: ':postId',
           name: 'postModify',
           component: PostModify,
+          beforeEnter: onlyAuthUser,
         },
       ],
     },
@@ -94,7 +98,22 @@ const router = createRouter({
         {
           path: "myPage",
           name: "myPage",
-          component: UserMyPage
+          component: UserMyPage,
+          beforeEnter: onlyAuthUser,
+          children: [
+            {
+              path: "scrap",
+              name: "myScrap",
+              component: UserScrap,
+              beforeEnter: onlyAuthUser,
+            },
+            {
+              path: "post",
+              name: "myPost",
+              component: UserPost,
+              beforeEnter: onlyAuthUser,
+            }
+          ]
         },
         {
           path: "logout",
@@ -108,21 +127,25 @@ const router = createRouter({
       path: '/message',
       name: 'message',
       component: MessageView,
+      beforeEnter: onlyAuthUser,
       children: [
         {
           path: ":memberId",
           name: "messageSend",
-          component: MessageSend
+          component: MessageSend,
+          beforeEnter: onlyAuthUser,
         },
         {
           path: "",
           name: "messageRoomList",
           component: MessageRoomList,
+          beforeEnter: onlyAuthUser,
         },
         {
           path: ":roomId",
           name: "messageRoomDetail",
           component: MessageRoomDetail,
+          beforeEnter: onlyAuthUser,
         }
       ]
 
@@ -130,7 +153,7 @@ const router = createRouter({
     {
       path: "/map",
       name: "map",
-      component: MapView
+      component: MapView,
     }
 
   ]
