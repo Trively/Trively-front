@@ -2,7 +2,9 @@
 import { ref, onMounted } from "vue";
 import { localAxios } from "@/util/http-common";
 import Swal from "sweetalert2";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const local = localAxios();
 const planLists = ref([]);
 
@@ -46,6 +48,10 @@ const removePlan = (planId) => {
   });
 };
 
+const goToDetail = (planListId) => {
+  router.push({ name: "detailPlan", params: { planListId: planListId } });
+};
+
 onMounted(async () => {
   getAllPlan();
 });
@@ -62,8 +68,13 @@ onMounted(async () => {
           </div>
           <div class="col-lg-10 plan-list-container">
             <div class="plan-list">
-              <div v-for="plan in planLists" :key="plan.planListId" class="plan-card mt-2">
-                <button @click="removePlan(plan.planListId)" class="remove-button">x</button>
+              <div
+                v-for="plan in planLists"
+                :key="plan.planListId"
+                class="plan-card mt-2"
+                @click="goToDetail(plan.planListId)"
+              >
+                <button @click.stop="removePlan(plan.planListId)" class="remove-button">x</button>
                 <div class="image-container">
                   <img
                     :src="plan.mainImage || '/src/assets/logo.png'"

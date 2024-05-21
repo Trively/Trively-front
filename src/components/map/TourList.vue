@@ -95,20 +95,30 @@ const handleLoadMore = () => {
   }
 };
 
+const prevMarker = ref(null);
 const moveCenter = (lat, lng) => {
   if (map.value) {
     const position = new kakao.maps.LatLng(lat, lng);
     map.value.setCenter(position);
 
+    if (prevMarker.value != null) {
+      prevMarker.value.infoWindow.visible = false;
+    }
+
     const marker = markerList.value.find((marker) => marker.lat === lat && marker.lng === lng);
 
     if (marker) {
       marker.infoWindow.visible = true;
+      prevMarker.value = marker;
     }
   }
 };
 
 const addToPlan = (trip) => {
+  // PlanList가 닫혀있으면 열기
+  if (!showPlanList.value) {
+    showPlanList.value = true;
+  }
   // 새로운 여행지의 id 생성
   const newId = generateUniqueId();
 
@@ -128,10 +138,6 @@ const addToPlan = (trip) => {
   };
 
   planList.value.push(newTrip);
-  // PlanList가 닫혀있으면 열기메
-  if (!showPlanList.value) {
-    showPlanList.value = true;
-  }
 };
 
 // 고유한 id 생성 함수
@@ -271,7 +277,7 @@ onUnmounted(() => {
               <td><img :src="trip.image1 || '/src/assets/logo.png'" width="100px" /></td>
               <td>{{ trip.name }}</td>
               <td>{{ trip.address }} {{ trip.addr2 }}</td>
-              <td><button class="custom-btn btn-11" @click="addToPlan(trip)">추가</button></td>
+              <td><button class="custom-btn btn-11" @click.stop="addToPlan(trip)">추가</button></td>
             </tr>
           </tbody>
         </table>

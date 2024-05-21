@@ -158,6 +158,11 @@ const router = createRouter({
       component: MapView,
     },
     {
+      path: "/map/:planListId",
+      name: "detailPlan",
+      component: MapView,
+    },
+    {
       path: "/myPlan",
       name: "myPlan",
       component: MyPlan,

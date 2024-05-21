@@ -1,23 +1,26 @@
 <script setup>
-import { ref } from "vue";
+import { ref, inject, onMounted } from "vue";
 import { useMapTourList } from "@/stores/mapTour";
 import draggable from "vuedraggable";
 import { localAxios } from "@/util/http-common";
 import Swal from "sweetalert2";
 import { useMemberStore } from "@/stores/member";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const memberStore = useMemberStore();
 const mapTourList = useMapTourList();
 const { setPlanToMarkerList } = mapTourList;
 const { planList } = useMapTourList();
 const local = localAxios();
+const planListId = ref(inject("planListId"));
 
 const showModal = ref(false);
-const title = ref("");
+const title = ref(inject("title"));
 
 const removeItem = (index) => {
   planList.splice(index, 1);
-  updateMarker();
+  // updateMarker();
 };
 
 const updateMarker = () => {
@@ -43,24 +46,57 @@ const savePlan = () => {
     plans,
   };
 
-  local
-    .post("/plan", payload)
-    .then((response) => {
-      Swal.fire({
-        title: "계획이 성공적으로 저장되었습니다!",
-        icon: "success",
+  if (planListId.value != null) {
+    const payload = {
+      title: title.value,
+      plans,
+      planListId: planListId.value,
+    };
+    local
+      .put("/plan", payload)
+      .then((response) => {
+        Swal.fire({
+          title: "계획이 성공적으로 저장되었습니다!",
+          icon: "success",
+        });
+        showModal.value = false;
+        router.push({ name: "myPlan" });
+      })
+      .catch((error) => {
+        console.error("요청 중 오류 발생: ", error);
+        Swal.fire({
+          icon: "error",
+          title: "로그인 후 다시 시도해주세요!",
+        });
       });
-      showModal.value = false;
-      //상세 페이지로 이동
-    })
-    .catch((error) => {
-      console.error("요청 중 오류 발생: ", error);
-      Swal.fire({
-        icon: "error",
-        title: "로그인 후 다시 시도해주세요!",
+  } else {
+    local
+      .post("/plan", payload)
+      .then((response) => {
+        Swal.fire({
+          title: "계획이 성공적으로 저장되었습니다!",
+          icon: "success",
+        });
+        showModal.value = false;
+        router.push({ name: "myPlan" });
+      })
+      .catch((error) => {
+        console.error("요청 중 오류 발생: ", error);
+        Swal.fire({
+          icon: "error",
+          title: "로그인 후 다시 시도해주세요!",
+        });
       });
-    });
+  }
 };
+
+onMounted(() => {
+  if (planListId.value != null) {
+    planList.splice(0, planList.length, ...planList.value); // 변경사항 없이 재할당하여 Vue가 감지할 수 있도록 함
+  } else {
+    planList.value = [];
+  }
+});
 </script>
 
 <template>
@@ -108,7 +144,7 @@ const savePlan = () => {
     <div v-if="showModal" class="modal">
       <div class="modal-content">
         <span @click="showModal = false" class="close">&times;</span>
-        <h2>두근거리는 일정의</h2>
+        <h2>설레는 일정의</h2>
         <h2>제목을 지어주세요!</h2>
         <input
           type="text"
