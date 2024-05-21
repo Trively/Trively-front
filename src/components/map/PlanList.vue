@@ -91,11 +91,7 @@ const savePlan = () => {
 };
 
 onMounted(() => {
-  if (planListId.value != null) {
-    planList.splice(0, planList.length, ...planList.value); // 변경사항 없이 재할당하여 Vue가 감지할 수 있도록 함
-  } else {
-    planList.value = [];
-  }
+
 });
 </script>
 
