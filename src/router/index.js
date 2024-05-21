@@ -48,7 +48,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView
+      component: HomeView,
     },
     {
 
@@ -65,6 +65,7 @@ const router = createRouter({
           path: '',
           name: 'postWrite',
           component: PostWrite,
+          beforeEnter: onlyAuthUser,
         },
         {
           path: ':postId',
@@ -75,6 +76,7 @@ const router = createRouter({
           path: ':postId',
           name: 'postModify',
           component: PostModify,
+          beforeEnter: onlyAuthUser,
         },
       ],
     },
@@ -97,16 +99,19 @@ const router = createRouter({
           path: "myPage",
           name: "myPage",
           component: UserMyPage,
+          beforeEnter: onlyAuthUser,
           children: [
             {
               path: "scrap",
               name: "myScrap",
-              component: UserScrap
+              component: UserScrap,
+              beforeEnter: onlyAuthUser,
             },
             {
               path: "post",
               name: "myPost",
               component: UserPost,
+              beforeEnter: onlyAuthUser,
             }
           ]
         },
@@ -122,21 +127,25 @@ const router = createRouter({
       path: '/message',
       name: 'message',
       component: MessageView,
+      beforeEnter: onlyAuthUser,
       children: [
         {
           path: ":memberId",
           name: "messageSend",
-          component: MessageSend
+          component: MessageSend,
+          beforeEnter: onlyAuthUser,
         },
         {
           path: "",
           name: "messageRoomList",
           component: MessageRoomList,
+          beforeEnter: onlyAuthUser,
         },
         {
           path: ":roomId",
           name: "messageRoomDetail",
           component: MessageRoomDetail,
+          beforeEnter: onlyAuthUser,
         }
       ]
 
@@ -144,7 +153,7 @@ const router = createRouter({
     {
       path: "/map",
       name: "map",
-      component: MapView
+      component: MapView,
     }
 
   ]

@@ -5,12 +5,15 @@ import { useMemberStore } from "@/stores/member";
 import { storeToRefs } from "pinia";
 // import { useRoute } from "vue-router";
 
-const user = ref(null);
+
 const menuStore = useMenuStore();
 const memberStore = useMemberStore();
 
 const { menuList } = storeToRefs(menuStore);
 const { changeMenuState } = menuStore;
+const logout = () => {
+  memberStore.userLogout();
+};
 // Logic to check if user is logged in or not
 // Example:
 // if (someCondition) {
@@ -60,23 +63,24 @@ const { changeMenuState } = menuStore;
             <li class="nav-item ms-auto">
               <router-link class="nav-link" to="/post">게시판</router-link>
             </li>
-            <template v-for="menu in menuList" :key="menu.routeName">
-              <template v-if="menu.show">
-                <template v-if="menu.routeName === 'logout'">
-                  <li class="nav-item">
-                  <router-link to="/" @click.prevent="memberStore.userLogout(); changeMenuState()" class="nav-link">{{
-                    menu.name
-                  }}</router-link>
-                </li>
-                </template>
-                <template v-else>
-                <li class="nav-item">
-                  <router-link :to="{ name: menu.routeName }" class="nav-link">{{
-                    menu.name
-                  }}</router-link>
-                </li>
-              </template>
-              </template>
+            <template v-if="memberStore.userInfo">
+              <li class="nav-item">
+                <router-link class="nav-link" to="/message">쪽지</router-link>
+              </li>
+              <li class="nav-item">
+                <router-link class="nav-link" to="/member/myPage">마이페이지</router-link>
+              </li>
+              <li class="nav-item">
+                <router-link class="nav-link" to="/" @click.prevent="logout">로그아웃</router-link>
+              </li>
+            </template>
+            <template v-else>
+              <li class="nav-item">
+                <router-link class="nav-link" to="/member/login">로그인</router-link>
+              </li>
+              <li class="nav-item">
+                <router-link class="nav-link" to="/member/join">회원가입</router-link>
+              </li>
             </template>
             
           </ul>
