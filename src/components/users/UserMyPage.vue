@@ -37,7 +37,7 @@ const selectMenu = (menu) => {
             @click="selectMenu('comment'); $router.push('/member/myPage/comment')"
             :class="{ 'active': selectedMenu === 'comment' }"
           >
-            내가 댓글 단 글
+            내가 단 댓글
           </button>
         </nav>
       </div>
