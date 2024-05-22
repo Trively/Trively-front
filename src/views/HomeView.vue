@@ -1,9 +1,9 @@
 <script setup>
 import { useRoute, useRouter } from "vue-router";
-import { useMemberStore } from "@/stores/member"
-import attractionImg from "@/components/attraction/attractionImg.vue"
+import { useMemberStore } from "@/stores/member";
+import attractionImg from "@/components/attraction/attractionImg.vue";
 
-const memberStore = useMemberStore()
+const memberStore = useMemberStore();
 const router = useRouter();
 
 function moveMap() {
@@ -23,7 +23,8 @@ function moveMap() {
               <h1>
                 <span v-if="memberStore.userInfo">
                   <span
-                    v-for="(char, index) in memberStore.userInfo.nickname + '님, 여행을 떠나볼까요?'"
+                    v-for="(char, index) in memberStore.userInfo.nickname +
+                    '님, 여행을 떠나볼까요?'"
                     :key="index"
                     class="animated-char"
                   >
@@ -44,22 +45,22 @@ function moveMap() {
                 <img style="width: 300px" src="@/assets/traveler.png" alt="" />
               </div>
               <button
-                class="btn btn-outline-dark mx-auto mt-3 btn-jittery"
+                class="btn btn-outline-dark mx-auto mt-3 btn-jittery btn-lg"
                 style="background-color: #001e3d; color: white"
                 type="button"
                 id="index-search-btn"
                 @click="moveMap()"
               >
-                <i class="bi bi-search"></i> 출발!
+                떠나요!
               </button>
-              
             </div>
           </div>
         </div>
       </div>
     </div>
     <div id="carousel-container">
-        <attractionImg /> <!-- Add the ImageCarousel component here -->
+      <attractionImg />
+      <!-- Add the ImageCarousel component here -->
     </div>
   </body>
 </template>
@@ -80,7 +81,7 @@ body {
 }
 .btn-jittery {
   -webkit-animation: jittery 4s infinite;
-          animation: jittery 4s infinite;
+  animation: jittery 4s infinite;
 }
 
 .animated-char {
@@ -88,39 +89,98 @@ body {
   animation: wave 1s ease-in-out infinite;
 }
 
-.animated-char:nth-child(1) { animation-delay: 0s; }
-.animated-char:nth-child(2) { animation-delay: 0.1s; }
-.animated-char:nth-child(3) { animation-delay: 0.2s; }
-.animated-char:nth-child(4) { animation-delay: 0.3s; }
-.animated-char:nth-child(5) { animation-delay: 0.4s; }
-.animated-char:nth-child(6) { animation-delay: 0.5s; }
-.animated-char:nth-child(7) { animation-delay: 0.6s; }
-.animated-char:nth-child(8) { animation-delay: 0.7s; }
-.animated-char:nth-child(9) { animation-delay: 0.8s; }
-.animated-char:nth-child(10) { animation-delay: 0.9s; }
-.animated-char:nth-child(11) { animation-delay: 1.0s; }
-.animated-char:nth-child(12) { animation-delay: 1.1s; }
-.animated-char:nth-child(13) { animation-delay: 1.2s; }
-.animated-char:nth-child(14) { animation-delay: 1.3s; }
-.animated-char:nth-child(15) { animation-delay: 1.4s; }
-.animated-char:nth-child(16) { animation-delay: 1.5s; }
-.animated-char:nth-child(17) { animation-delay: 1.6s; }
-.animated-char:nth-child(18) { animation-delay: 1.7s; }
-.animated-char:nth-child(19) { animation-delay: 1.8s; }
-.animated-char:nth-child(20) { animation-delay: 1.9s; }
-.animated-char:nth-child(21) { animation-delay: 2.0s; }
-.animated-char:nth-child(22) { animation-delay: 2.1s; }
-.animated-char:nth-child(23) { animation-delay: 2.2s; }
-.animated-char:nth-child(24) { animation-delay: 2.3s; }
-.animated-char:nth-child(25) { animation-delay: 2.4s; }
-.animated-char:nth-child(26) { animation-delay: 2.5s; }
-.animated-char:nth-child(27) { animation-delay: 2.6s; }
-.animated-char:nth-child(28) { animation-delay: 2.7s; }
-.animated-char:nth-child(29) { animation-delay: 2.8s; }
+.animated-char:nth-child(1) {
+  animation-delay: 0s;
+}
+.animated-char:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.animated-char:nth-child(3) {
+  animation-delay: 0.2s;
+}
+.animated-char:nth-child(4) {
+  animation-delay: 0.3s;
+}
+.animated-char:nth-child(5) {
+  animation-delay: 0.4s;
+}
+.animated-char:nth-child(6) {
+  animation-delay: 0.5s;
+}
+.animated-char:nth-child(7) {
+  animation-delay: 0.6s;
+}
+.animated-char:nth-child(8) {
+  animation-delay: 0.7s;
+}
+.animated-char:nth-child(9) {
+  animation-delay: 0.8s;
+}
+.animated-char:nth-child(10) {
+  animation-delay: 0.9s;
+}
+.animated-char:nth-child(11) {
+  animation-delay: 1s;
+}
+.animated-char:nth-child(12) {
+  animation-delay: 1.1s;
+}
+.animated-char:nth-child(13) {
+  animation-delay: 1.2s;
+}
+.animated-char:nth-child(14) {
+  animation-delay: 1.3s;
+}
+.animated-char:nth-child(15) {
+  animation-delay: 1.4s;
+}
+.animated-char:nth-child(16) {
+  animation-delay: 1.5s;
+}
+.animated-char:nth-child(17) {
+  animation-delay: 1.6s;
+}
+.animated-char:nth-child(18) {
+  animation-delay: 1.7s;
+}
+.animated-char:nth-child(19) {
+  animation-delay: 1.8s;
+}
+.animated-char:nth-child(20) {
+  animation-delay: 1.9s;
+}
+.animated-char:nth-child(21) {
+  animation-delay: 2s;
+}
+.animated-char:nth-child(22) {
+  animation-delay: 2.1s;
+}
+.animated-char:nth-child(23) {
+  animation-delay: 2.2s;
+}
+.animated-char:nth-child(24) {
+  animation-delay: 2.3s;
+}
+.animated-char:nth-child(25) {
+  animation-delay: 2.4s;
+}
+.animated-char:nth-child(26) {
+  animation-delay: 2.5s;
+}
+.animated-char:nth-child(27) {
+  animation-delay: 2.6s;
+}
+.animated-char:nth-child(28) {
+  animation-delay: 2.7s;
+}
+.animated-char:nth-child(29) {
+  animation-delay: 2.8s;
+}
 /* 추가 글자에 대해서도 nth-child를 추가해줍니다 */
 
 @keyframes wave {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -128,8 +188,8 @@ body {
   }
 }
 
-.carousel-container{
-  width:100%;
+.carousel-container {
+  width: 100%;
   margin-top: 50px;
 }
 </style>
