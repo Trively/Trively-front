@@ -181,6 +181,11 @@ const router = createRouter({
       path: "/myPlan",
       name: "myPlan",
       component: MyPlan,
+    },
+    {
+      path: "/map/:planListId:isShare",
+      name: "sharePlan",
+      component: MapView,
     }
 
   ]

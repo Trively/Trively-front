@@ -35,7 +35,7 @@
               <div class="col-lg-10 plan-list-container">
                 <div class="plan-list">
                   
-                  <button @click="goToDetail(message.planlistId)"> <img src="@/assets/share.png"/>
+                  <button @click="goToDetail(message.planlistId, isShare)"> <img src="@/assets/share.png"/>
                   </button>
                   <div class="image-container">
                     
@@ -79,8 +79,7 @@
 import { ref, onMounted, watch } from 'vue';
 import { localAxios } from "@/util/http-common";
 import Swal from "sweetalert2";
-import { useRouter } from "vue-router";
-
+import { useRoute, useRouter } from "vue-router";
 const router = useRouter();
 const local = localAxios();
 const showDetail = ref(false);
@@ -121,8 +120,8 @@ const fetchMessages = async () => {
     console.error("Error fetching messages:", error);
   }
 };
-const goToDetail = (planListId) => {
-  router.push({ name: "detailPlan", params: { planListId: planListId } });
+const goToDetail = (planListId, isShare) => {
+  router.push({ name: "sharePlan", params: { planListId: planListId, isShare : true} });
 };
 const fetchRooms = async () => {
   try {

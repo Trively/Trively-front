@@ -5,11 +5,12 @@ import draggable from "vuedraggable";
 import { localAxios } from "@/util/http-common";
 import Swal from "sweetalert2";
 import { useMemberStore } from "@/stores/member";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import lockImage from "@/assets/lock.png";
 import unlockImage from "@/assets/unlock.png";
 
 const router = useRouter();
+const route = useRoute();
 const memberStore = useMemberStore();
 const mapTourList = useMapTourList();
 const { setPlanToMarkerList } = mapTourList;
@@ -98,8 +99,9 @@ watch(() => message.value.content, (newVal) => {
 const updateMarker = () => {
   setPlanToMarkerList();
 };
-
+const isShare = ref(route.params.isShare);
 const savePlan = () => {
+  console.log(isShare.value);
   if (!title.value.trim()) {
     Swal.fire({
       icon: "warning",
@@ -119,7 +121,7 @@ const savePlan = () => {
     plans,
   };
 
-  if (planListId.value != null) {
+  if (planListId.value != null && !isShare.value) {
     payload.planListId = planListId.value;
     local
       .put("/plan", payload)
