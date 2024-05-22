@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted, watch, inject } from "vue";
 import { storeToRefs } from "pinia";
 import { useMapTourList } from "@/stores/mapTour";
 import { localAxios } from "@/util/http-common";
+import OpenAi from "@/components/OpenAi.vue";
 
 const local = localAxios();
 const searchArea = ref("0");
@@ -276,7 +277,10 @@ onUnmounted(() => {
               class="table-contents"
             >
               <td><img :src="trip.image1 || '/src/assets/logo.png'" width="100px" /></td>
-              <td>{{ trip.name }}</td>
+              <td>
+                {{ trip.name }}
+                <OpenAi :tripName="trip.name"></OpenAi>
+              </td>
               <td>{{ trip.address }} {{ trip.addr2 }}</td>
               <td><button class="custom-btn btn-11" @click.stop="addToPlan(trip)">추가</button></td>
             </tr>
