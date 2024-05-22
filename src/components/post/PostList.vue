@@ -8,7 +8,6 @@ import { useMemberStore } from "@/stores/member"
 
 const local = localAxios();
 const memberStore = useMemberStore()
-const { VITE_POST_BASE_URL } = import.meta.env;
 const router = useRouter();
 const posts = ref([]);
 

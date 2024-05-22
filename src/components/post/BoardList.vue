@@ -24,8 +24,6 @@ import { ref, onMounted, defineEmits } from "vue";
 import { localAxios } from "@/util/http-common";
 
 const local = localAxios();
-const { VITE_POST_BASE_URL } = import.meta.env;
-
 const boards = ref([]);
 const selectedBoard = ref(); // 선택된 게시판을 추적하기 위한 변수
 const emit = defineEmits(["selectBoard"]);

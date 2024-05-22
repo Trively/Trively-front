@@ -4,19 +4,21 @@ import { useRoute, useRouter } from "vue-router";
 import { localAxios } from "@/util/http-common";
 import Swal from "sweetalert2";
 import { useMemberStore } from "@/stores/member"
+import CommentForm from "@/components/comment/CommentForm.vue";
+import CommentList from "@/components/comment/CommentList.vue";
 
 const local = localAxios();
 const memberStore = useMemberStore()
-const { VITE_POST_BASE_URL } = import.meta.env;
 const route = useRoute();
 const router = useRouter();
 
 const postId = ref(route.params.postId);
-
 const post = ref({});
+const comments = ref([]);
 
 onMounted(() => {
   getPost();
+  getComments();
 });
 
 const getPost = () => {
@@ -29,6 +31,19 @@ const getPost = () => {
       console.error("검색 중 오류 발생:", error);
     });
 };
+
+const getComments = () => {
+  local
+    .get(`comment/${postId.value}`)
+    .then((response) => {
+      comments.value = response.data.data.list;
+
+    })
+    .catch((error) => {
+      console.error("댓글 조회 중 오류 발생:", error);
+    });
+};
+
 
 function moveList() {
   router.push({ name: "postList" });
@@ -123,6 +138,13 @@ function onDeleteArticle() {
             </div>
           </div>
         </div>
+      </div>
+    </div>
+    <div class="row mt-4">
+      <div class="col-lg-10">
+        <h3>댓글</h3>
+        <CommentForm :postId="postId" @commentSubmitted="getComments" />
+        <CommentList :comments="comments" />
       </div>
     </div>
   </div>
