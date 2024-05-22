@@ -147,6 +147,9 @@ const modifyArticle = () => {
 const moveList = () => {
   router.push({ name: "postList" });
 };
+const moveBack = () => {
+  router.back();
+}
 
 onMounted(() => {
   ListBoards();
@@ -203,7 +206,8 @@ onMounted(() => {
     <div class="col-auto text-center">
       <button type="submit" class="btn btn-primary mb-3" v-if="type === 'regist'">글작성</button>
       <button type="submit" class="btn btn-success mb-3" v-else>글수정</button>
-      <button type="button" class="btn btn-secondary mb-3 ms-1" @click="moveList">목록</button>
+      <button type="button" class="btn btn-secondary mb-3 ms-1" v-if ="type === 'regist'" @click="moveList">목록</button>
+      <button type="button" class="btn btn-secondary mb-3 ms-1" v-else @click="moveBack">뒤로</button>
     </div>
   </form>
 </template>
