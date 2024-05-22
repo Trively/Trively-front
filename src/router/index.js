@@ -75,6 +75,7 @@ const router = createRouter({
           path: ':postId',
           name: 'postDetail',
           component: PostDetail,
+          beforeEnter: onlyAuthUser,
         },
         {
           path: ':postId',
