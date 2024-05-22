@@ -1,9 +1,13 @@
 <template>
   <link href="https://webfontworld.github.io/goodchoice/Jalnan.css" rel="stylesheet" />
   <div class="wrapper">
-    <a-button type="" @click="getGPTResponse">
+    <div class="tooltip-container">
+      <a-button class="ai-button" type="" @click="getGPTResponse">
       <img src="@/assets/ai.png" width="30px" height="30px" />
+      <span class="tooltip">AI 리뷰 검색</span>
     </a-button>
+    </div>
+    
 
     <a-modal v-model:open="showAiModal" title="" @ok="closeModal" class="custom-modal">
       <div v-if="showAiModal || loading">
@@ -136,6 +140,43 @@ const closeModal = () => {
   word-break: break-word;
   font-size: 1.2em; /* 글자 크기 키우기 */
 }
+.tooltip {
+  visibility: hidden;
+  width: 150%;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 10px;
+  position: absolute;
+  z-index: 1;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%); /* 가운데 정렬 */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.tooltip-container {
+  position: relative; /* Ensure tooltip is positioned relative to this container */
+  display: inline-block; /* Adjust display as needed */
+}
+
+.tooltip-container:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
 </style>
 
 <style>
