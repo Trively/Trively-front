@@ -16,6 +16,8 @@ defineProps({ post: Object });
     </td>
     <td>{{ post.nickName }}</td>
     <td>{{ post.hit }}</td>
+    <td>{{post.commentCnt}}</td>
+    <td>{{post.likeCnt}}</td>
     <td>{{ post.createdAt }}</td>
   </tr>
 </template>
