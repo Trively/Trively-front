@@ -72,20 +72,34 @@ function onDeleteArticle() {
       });
   }
 }
+const toggleLike = () => {
+  local
+    .post(`/post/${postId.value}/like`)
+    .then(() => {
+      post.value.liked = !post.value.liked;
+      if (post.value.liked) post.value.likeCnt += 1;
+      if (!post.value.liked) post.value.likeCnt -= 1;
+    })
+    .catch((error) => {
+      console.error("좋아요 처리 중 오류 발생:", error);
+    });
+};
+
+const toggleScrap = () => {
+  local
+    .post(`/post/${postId.value}/scrap`)
+    .then(() => {
+      post.value.scraped = !post.value.scraped;
+    })
+    .catch((error) => {
+      console.error("스크랩 처리 중 오류 발생:", error);
+    });
+};
 </script>
 
 <template>
   <div class="container">
-    <div class="position-relative">
-      <div class="fixed-top-container position-absolute top-0 end-0">
-        <div class="col-md align-self-center text-end">
-          <div class="image-container">
-            <!-- <img :src="attraction.firstImage" class="img-fluid rounded" alt="Attraction Image"> -->
-            <!-- <p class="fst-italic mt-2">{{ post.title }}</p> -->
-          </div>
-        </div>
-      </div>
-    </div>
+  
     <div class="row justify-content-center">
       <div class="col-lg-10 text-start">
         <div class="row my-2">
@@ -95,7 +109,8 @@ function onDeleteArticle() {
               <p>
                 <!-- <span class="fw-bold">{{ post.userName }}</span> <br /> -->
                 <span class="text-secondary fw-light">
-                  {{ post.createdAt }} | 조회 : {{ post.hit }}
+                  {{ post.createdAt }} | 조회 : {{ post.hit }} 좋아요 : {{ post.likeCnt }}
+                  
                 </span>
               </p>
             </div>
@@ -122,29 +137,41 @@ function onDeleteArticle() {
             </div> -->
           </div>
         </div>
-        <div class="col-12 text-end">
-          <div class="d-flex justify-content-end">
-            <button type="button" class="btn btn-outline-secondary mb-3" @click="moveList">
-              글목록
-            </button>
-            <button
-              type="button"
-              class="btn btn-secondary mb-3 ms-1"
-              @click="moveModify"
-              v-if="memberStore.userInfo && memberStore.userInfo.memberId === post.memberId"
-            >
-              글수정
-            </button>
-            <button
-              type="button"
-              class="btn btn-danger mb-3 ms-1"
-              @click="onDeleteArticle"
-              v-if="memberStore.userInfo && memberStore.userInfo.memberId === post.memberId"
-            >
-              글삭제
-            </button>
-          </div>
-        </div>
+        <div class="col-12 text-start">
+  <div class="d-flex justify-content-between align-items-center">
+    <!-- 좋아요, 스크랩 버튼 -->
+    <div class="d-flex align-items-center">
+      <button class="btn btn-icon me-1" @click="toggleLike">
+        <img v-if="post.liked" src="@/assets/heart.png" alt="Like Button" class="like-img" />
+        <img v-else src="@/assets/unheart.png" alt="Un-Like Button" class="like-img" />
+      </button>
+      <button class="btn btn-icon me-1" @click="toggleScrap">
+        <img v-if="post.scraped" src="@/assets/star.png" alt="Scrap Button" class="scrap-img" />
+        <img v-else src="@/assets/unstar.png" alt="Un-Scrap Button" class="scrap-img" />
+      </button>
+    </div>
+    <!-- 글목록, 삭제, 수정 버튼 -->
+    <div class="d-flex">
+      <button type="button" class="btn btn-outline-secondary mb-3 me-1" @click="moveList">글목록</button>
+      <button
+        type="button"
+        class="btn btn-secondary mb-3 me-1"
+        @click="moveModify"
+        v-if="memberStore.userInfo && memberStore.userInfo.memberId === post.memberId"
+      >
+        글수정
+      </button>
+      <button
+        type="button"
+        class="btn btn-danger mb-3 me-1"
+        @click="onDeleteArticle"
+        v-if="memberStore.userInfo && memberStore.userInfo.memberId === post.memberId"
+      >
+        글삭제
+      </button>
+    </div>
+  </div>
+</div>
         <div class="divider mt-3 mb-3"></div>
 
         <div class="row justify-content-center">
@@ -226,5 +253,32 @@ function onDeleteArticle() {
   overflow-y: auto; /* 내용이 넘칠 경우 스크롤 표시 */
   overscroll-behavior-y: contain;
   scrollbar-width: none;
+}
+
+.btn-icon {
+  width: 50px; /* 버튼 컨테이너 크기 */
+  height: 50px; /* 버튼 컨테이너 크기 */
+  padding: 0;
+  border: none;
+  background: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-icon img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.like-img {
+  width: 40px;
+  height: 40px;
+}
+
+.scrap-img {
+  width: 50px; /* 스크랩 버튼 이미지 크기 */
+  height: 50px; /* 스크랩 버튼 이미지 크기 */
 }
 </style>
