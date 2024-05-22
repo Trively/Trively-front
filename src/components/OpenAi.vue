@@ -1,47 +1,29 @@
 <template>
-  <div>
+  <link href="https://webfontworld.github.io/goodchoice/Jalnan.css" rel="stylesheet" />
+  <div class="wrapper">
     <a-button type="" @click="getGPTResponse">
       <img src="@/assets/ai.png" width="30px" height="30px" />
     </a-button>
-    <!-- <button
-      @click="getGPTResponse"
-      class="btn btn-lg btn-jittery open-button-tour btn-hover color-3"
-    >
-      <img src="@/assets/ai.png" width="30px" height="30px" />
-    </button> -->
 
-    <a-modal v-model:open="open" title="AI 검색 결과" @ok="closeModal">
-      <!-- <div v-if="showAiModal || loading"> -->
-      <div class="modal-content">
-        <div v-if="loading">
-          <h2>잠시만 기다려주세요. 검색중입니다.</h2>
-        </div>
-        <div v-else>
-          <h2>AI 검색 결과</h2>
-          <hr />
-          <div class="typed-text">
-            <span v-for="(char, index) in displayedText" :key="index">{{ char }}</span>
+    <a-modal v-model:open="showAiModal" title="" @ok="closeModal" class="custom-modal">
+      <div v-if="showAiModal || loading">
+        <div class="modal-content">
+          <div v-if="loading">
+            <h2>답변 생성중입니다..</h2>
+            <div class="spinner-div mt-3">
+              <a-spin />
+            </div>
+          </div>
+          <div v-else>
+            <h2>{{ tripName }}</h2>
+            <hr />
+            <div class="typed-text">
+              <span v-for="(char, index) in displayedText" :key="index">{{ char }}</span>
+            </div>
           </div>
         </div>
       </div>
-      <!-- </div> -->
     </a-modal>
-
-    <!-- <div v-if="showAiModal || loading" class="modal-overlay">
-      <div class="modal-content">
-        <div v-if="loading">
-          <h2>잠시만 기다려주세요. 검색중입니다.</h2>
-        </div>
-        <div v-else>
-          <h2>AI 검색 결과</h2>
-          <hr />
-          <div class="typed-text">
-            <span v-for="(char, index) in displayedText" :key="index">{{ char }}</span>
-          </div>
-          <button @click="closeModal" class="close-button">닫기</button>
-        </div>
-      </div>
-    </div> -->
   </div>
 </template>
 
@@ -54,6 +36,7 @@ const props = defineProps({
     type: String,
   },
 });
+
 const answer = ref("");
 const showAiModal = ref(false);
 const loading = ref(false);
@@ -62,6 +45,7 @@ const currentCharIndex = ref(0);
 let typingInterval = null;
 
 const getGPTResponse = async () => {
+  showAiModal.value = true;
   try {
     loading.value = true;
     const openai = new OpenAI({
@@ -70,7 +54,8 @@ const getGPTResponse = async () => {
     });
 
     const prompt = `대한민국의 ${props.tripName} 을 검색해서, 사람들의 방문 후기 혹은 이용후기를 요약해서 알려줘.
-    단, 요약은 총 5개의 리스트로 정리해서 보여줘`;
+    단, 요약은 3개의 장점과, 3개의 단점으로 정리해줘.
+    장점과 단점이 잘 구분되게 정리해줘.`;
 
     const response = await openai.chat.completions.create({
       messages: [
@@ -83,7 +68,6 @@ const getGPTResponse = async () => {
     });
     answer.value = response.choices[0].message.content;
     loading.value = false;
-    showAiModal.value = true;
     startTypingEffect();
     console.log("chatGPT 결과: ", response.choices[0].message.content);
   } catch (error) {
@@ -115,45 +99,47 @@ const closeModal = () => {
 </script>
 
 <style scoped>
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+.spinner-div {
+  text-align: center;
+  border-radius: 8px;
 }
 
-.modal-content {
-  background: white;
-  padding: 20px;
+.custom-modal .ant-modal-content {
   border-radius: 10px;
-  max-width: 500px;
-  width: 80%;
+  padding: 20px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  text-align: center;
+  font-family: "Jalnan", sans-serif; /* 폰트 적용 */
+}
+
+.custom-modal .ant-modal-header {
+  background-color: #f0f0f0;
+  border-bottom: none;
+}
+
+.custom-modal .ant-modal-title {
+  font-weight: bold;
+  font-size: 1.5em;
+}
+
+.custom-modal .ant-modal-body {
+  padding: 20px;
+}
+
+.custom-modal .ant-modal-footer {
+  border-top: none;
+  display: flex;
+  justify-content: center;
 }
 
 .typed-text {
   white-space: pre-wrap;
   word-break: break-word;
+  font-size: 1.2em; /* 글자 크기 키우기 */
 }
+</style>
 
-.close-button {
-  margin-top: 20px;
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.close-button:hover {
-  background-color: #0056b3;
+<style>
+.custom-modal{
+  font-family: "Jalnan";
 }
 </style>
