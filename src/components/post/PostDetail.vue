@@ -3,12 +3,12 @@ import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { localAxios } from "@/util/http-common";
 import Swal from "sweetalert2";
-import { useMemberStore } from "@/stores/member"
+import { useMemberStore } from "@/stores/member";
 import CommentForm from "@/components/comment/CommentForm.vue";
 import CommentList from "@/components/comment/CommentList.vue";
 
 const local = localAxios();
-const memberStore = useMemberStore()
+const memberStore = useMemberStore();
 const route = useRoute();
 const router = useRouter();
 
@@ -37,13 +37,11 @@ const getComments = () => {
     .get(`comment/${postId.value}`)
     .then((response) => {
       comments.value = response.data.data.list;
-
     })
     .catch((error) => {
       console.error("댓글 조회 중 오류 발생:", error);
     });
 };
-
 
 function moveList() {
   router.push({ name: "postList" });
@@ -119,37 +117,42 @@ function onDeleteArticle() {
             </div> -->
           </div>
         </div>
+        <div class="col-12 text-end">
+          <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-outline-secondary mb-3" @click="moveList">
+              글목록
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary mb-3 ms-1"
+              @click="moveModify"
+              v-if="memberStore.userInfo && memberStore.userInfo.memberId === post.memberId"
+            >
+              글수정
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger mb-3 ms-1"
+              @click="onDeleteArticle"
+              v-if="memberStore.userInfo && memberStore.userInfo.memberId === post.memberId"
+            >
+              글삭제
+            </button>
+          </div>
+        </div>
         <div class="divider mt-3 mb-3"></div>
 
         <div class="row justify-content-center">
           <div class="col-md-8">
-            <div class="d-flex justify-content-center">
-              <button type="button" class="btn btn-outline-secondary mb-3" @click="moveList">
-                글목록
-              </button>            
-              <button type="button" class="btn btn-secondary mb-3 ms-1"
-                @click="moveModify" v-if="memberStore.userInfo && memberStore.userInfo.memberId === post.memberId">
-                글수정
-              </button>
-              <button type="button" class="btn btn-danger mb-3 ms-1"
-                @click="onDeleteArticle" v-if="memberStore.userInfo && memberStore.userInfo.memberId === post.memberId">
-                글삭제
-              </button>
-            </div>
+            <h3>댓글</h3>
+            <CommentForm :postId="postId" @commentSubmitted="getComments" />
+            <CommentList :comments="comments" :postId="postId" />
           </div>
         </div>
       </div>
     </div>
-    <div class="row mt-4">
-      <div class="col-lg-10">
-        <h3>댓글</h3>
-        <CommentForm :postId="postId" @commentSubmitted="getComments" />
-        <CommentList :comments="comments" />
-      </div>
-    </div>
   </div>
 </template>
-
 
 <style scoped>
 .container {
@@ -184,6 +187,26 @@ function onDeleteArticle() {
 .d-flex.justify-content-center {
   display: flex;
   justify-content: center;
+  width: 100%;
+}
+
+.row.my-2 > div.col-8 {
+  width: 100%;
+}
+
+.row.my-2 > div.col-8 > h2.text-dark {
+  width: 100%;
+}
+
+.row.my-2 > div.col-8 > .clearfix.align-content-center {
+  width: 100%;
+}
+
+.row > div.col-md > .text-dark {
+  width: 100%;
+}
+
+.row.justify-content-center > div.col-md-8 {
   width: 100%;
 }
 </style>

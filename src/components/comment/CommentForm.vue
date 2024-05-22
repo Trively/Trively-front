@@ -5,79 +5,75 @@ import Swal from "sweetalert2";
 
 const local = localAxios();
 const props = defineProps({
-  parentId: {
-    type: Number,
-    default: null,
-  },
   postId: {
     type: Number,
     required: true,
   },
+  parentId: {
+    type: Number,
+    default: null,
+  },
 });
+
+const emit = defineEmits(["commentSubmitted", "cancel"]);
 
 const content = ref("");
 
-const emit = defineEmits(["commentSubmitted"]);
+const onCancel = () => {
+  emit("cancel");
+};
 
 const submitComment = () => {
-  if (!content.value.trim()) {
+  if (!content.value) {
     Swal.fire({
       icon: "warning",
-      title: "내용을 입력해주세요!",
+      title: "댓글 내용이 없습니다!",
     });
     return;
   }
 
-  const payload = {
-    postId: props.postId,
+  const commentData = {
     content: content.value,
     parentId: props.parentId,
+    postId: props.postId,
   };
 
-  local
-    .post("/comment", payload)
-    .then((response) => {
-      Swal.fire({
-        title: "댓글이 성공적으로 작성되었습니다!",
-        icon: "success",
-      });
-      content.value = "";
-      emit("commentSubmitted");
-    })
-    .catch((error) => {
-      console.error("댓글 작성 중 오류 발생:", error);
-      Swal.fire({
-        icon: "error",
-        title: "댓글 작성에 실패했습니다!",
-      });
-    });
+  local.post("/comment", commentData).then((response) => {
+    content.value = "";
+    emit("commentSubmitted", response.data.data); // 새로운 댓글의 정보를 함께 전달
+
+    if (props.parentId) {
+      onCancel();
+    }
+  });
 };
 </script>
 
 <template>
-  <div>
-    <textarea v-model="content" placeholder="댓글을 입력하세요"></textarea>
-    <button @click="submitComment">댓글 작성</button>
+  <div class="input-wrapper mb-2">
+    <input type="text" v-model="content" placeholder="댓글 작성..." />
+    <button class="btn btn-primary" @click="submitComment">작성</button>
+    <button v-if="parentId" @click="onCancel" class="btn btn-secondary">취소</button>
   </div>
 </template>
 
 <style scoped>
-textarea {
-  width: 100%;
-  height: 100px;
-  margin-bottom: 10px;
-  padding: 10px;
-  border: 1px solid #ccc;
+.input-wrapper {
+  display: flex;
+  align-items: center;
 }
+
+input[type="text"] {
+  flex: 1;
+  margin-right: -1px; /* 버튼과 정확히 맞도록 조정 */
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  height: 38px; /* 버튼과 높이를 동일하게 설정 */
+}
+
 button {
-  display: block;
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-button:hover {
-  background-color: #0056b3;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  height: 38px; /* 버튼과 높이를 동일하게 설정 */
 }
 </style>

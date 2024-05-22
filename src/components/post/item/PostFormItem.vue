@@ -115,9 +115,9 @@ const writeArticle = () => {
     })
     .then((response) => {
       Swal.fire({
-        title:"게시글을 작성했습니다!",
-        icon:"success",
-      })
+        title: "게시글을 작성했습니다!",
+        icon: "success",
+      });
       moveList();
     })
     .catch((error) => {
@@ -127,16 +127,16 @@ const writeArticle = () => {
 
 const modifyArticle = () => {
   local
-  .put(`/post/${postId.value}`, {
+    .put(`/post/${postId.value}`, {
       title: post.value.title,
       content: post.value.content,
       boardName: post.value.boardName,
     })
     .then((response) => {
       Swal.fire({
-        title:"게시글을 수정했습니다!",
-        icon:"success"
-      })
+        title: "게시글을 수정했습니다!",
+        icon: "success",
+      });
       moveList();
     })
     .catch((error) => {
@@ -203,9 +203,7 @@ onMounted(() => {
     <div class="col-auto text-center">
       <button type="submit" class="btn btn-primary mb-3" v-if="type === 'regist'">글작성</button>
       <button type="submit" class="btn btn-success mb-3" v-else>글수정</button>
-      <button type="button" class="btn btn-secondary mb-3 ms-1" @click="moveList">
-        목록
-      </button>
+      <button type="button" class="btn btn-secondary mb-3 ms-1" @click="moveList">목록</button>
     </div>
   </form>
 </template>
