@@ -46,12 +46,12 @@ function moveMap() {
               </div>
               <button
                 class="btn btn-outline-dark mx-auto mt-3 btn-jittery btn-lg"
-                style="background-color: #001e3d; color: white"
+                style="background-color: #7685b5; color: white"
                 type="button"
                 id="index-search-btn"
                 @click="moveMap()"
               >
-                떠나요!
+                Let's go!
               </button>
             </div>
           </div>
