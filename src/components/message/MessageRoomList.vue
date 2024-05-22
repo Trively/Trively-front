@@ -1,97 +1,129 @@
 <template>
-    <div class="outer-container">
-        <div class="container">
-          
-            <div class="room-list">
-                <h4 class="title">쪽지 목록</h4>
-                <ul>
-                    <li v-for="room in rooms" :key="room.roomId" class="room-item" @click="selectRoom(room.roomId)">
-                        <h3>{{ room.nickname }}</h3>
-                        <p v-text="truncateRecentContent(room.recentContent, 15)"></p>
-                        <small>{{ new Date(room.recentDateTime).toLocaleString() }}</small>
-                    </li>
-                </ul>
-            </div>
-            <div class="message-room" v-show="showDetail">
-                <div class="header">
-                  <div class="left">
-                    <h4>{{selectedRoomNickname}}님과의 쪽지
-                      <img src="@/assets/plane.png" class="header-image">
-                    </h4>
+  <div class="outer-container">
+    <div class="container">
+      <!-- Room List -->
+      <div class="room-list">
+        <h4 class="title">쪽지 목록</h4>
+        <ul>
+          <li v-for="room in rooms" :key="room.roomId" class="room-item" @click="selectRoom(room.roomId)">
+            <h3>{{ room.nickname }}</h3>
+            <p v-text="truncateRecentContent(room.recentContent, 15)"></p>
+            <small>{{ new Date(room.recentDateTime).toLocaleString() }}</small>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Message Room -->
+      <div class="message-room" v-show="showDetail">
+        <div class="header">
+          <div class="left">
+            <h4>{{ selectedRoomNickname }}님과의 쪽지
+              <img src="@/assets/plane.png" class="header-image">
+            </h4>
+            <button @click="openPlanList" class="plan-button">여행계획 공유하기</button>
+          </div>
+          <div class="right">
+            <button class="reply-button" @click="openReplyModal">답장하기</button>
+            <button class="h-close-button" @click="closeDetail">닫기</button>
+          </div>
+        </div>
+        <div class="messages">
+          <div v-for="message in messages" :key="message.messageId" :class="{'message-sent': message.sender, 'message-received': !message.sender}">
+            <template v-if="message.content.length<1 && message.planlistId">
+              
+              <!-- 여기에 여행계획 카드 넣기-->
+              <div class="col-lg-10 plan-list-container">
+                <div class="plan-list">
+                  
+                  <button @click="goToDetail(message.planlistId)"> <img src="@/assets/share.png"/>
+                  </button>
+                  <div class="image-container">
                     
                   </div>
-                  <div class="right">
-                    <button class="reply-button" @click="openReplyModal">답장하기</button>
-                    <button class = "h-close-button"@click="closeDetail">닫기</button>
-                  </div>
-                </div>
-                <div class="messages">
-                    <div v-for="message in messages" :key="message.messageId" :class="{'message-sent': message.sender, 'message-received': !message.sender}">
-                        <p>{{ message.content }}</p>
-                        <small>{{ message.createdAt }}</small>
+      
+                    <div class="overlay">
+                      <span class="details">상세보기</span>
                     </div>
+                  
                 </div>
-                
-            </div>
-        </div>
-        <div class="modal-overlay" v-if="showModal">
-            <div class="modal-container">
-                <div class="modal-header"> 
-                    <h2 class="modal-title">To. {{selectedRoomNickname}}님</h2>
-                    <button @click="closeModal" class="close-button">x</button>
-                </div>
-                <div class="modal-body">
-                  <textarea v-model="message.content" placeholder="메시지를 입력하세요"></textarea>
-                  <div class="char-count">{{ currentContentLength }}/255</div>
-                  <div v-if="contentErrMsg" class="error-msg">{{ contentErrMsg }}</div>
               </div>
-                <div class="modal-footer">
-                    <button @click="confirmSend" class="btn">전송</button>
-                </div>
-            </div>
+            </template>
+            <template v-else>
+              <p>{{ message.content }}</p>
+              <small>{{ message.createdAt }}</small>
+            </template>
+            
+          </div>
         </div>
+      </div>
     </div>
+
+    <!-- Plan List Modal -->
+    <div v-if="showPlanListModal" class="modal">
+      <div class="modal-content">
+        <span @click="showPlanListModal = false" class="close">&times;</span>
+        <h2>여행계획을 공유해보세요!</h2>
+        <div v-if="planList.length === 0">계획이 아직 없어요ㅠㅠ</div>
+        <div v-else>
+          <div v-for="plan in planList" :key="plan.planListId" class="recommendation-item">
+            <div>{{ plan.title }}</div>
+            <button @click="sendMyPlan(plan.planListId)" class="btn btn-sm btn-primary custom-message-button">공유하기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { localAxios } from "@/util/http-common";
 import Swal from "sweetalert2";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 const local = localAxios();
 const showDetail = ref(false);
 const roomId = ref(null);
 const messages = ref([]);
 const rooms = ref([]);
 const showModal = ref(false);
+const showPlanListModal = ref(false);
+const planList = ref([]);
 const message = ref({
-    content: "",
+  content: "",
 });
 const contentErrMsg = ref("");
 const MAX_CONTENT_LENGTH = 255;
 const currentContentLength = ref(0);
+
 // 텍스트 입력 길이 확인 및 오류 메시지 표시 함수
 const checkContentLength = () => {
-    if (message.value.content.length > MAX_CONTENT_LENGTH) {
-        contentErrMsg.value = `내용은 ${MAX_CONTENT_LENGTH}자를 넘을 수 없습니다.`;
-    } else {
-        contentErrMsg.value = ""; // 오류 메시지 초기화
-    }
+  if (message.value.content.length > MAX_CONTENT_LENGTH) {
+    contentErrMsg.value = `내용은 ${MAX_CONTENT_LENGTH}자를 넘을 수 없습니다.`;
+  } else {
+    contentErrMsg.value = ""; // 오류 메시지 초기화
+  }
 };
+
 const truncateRecentContent = (content, maxLength) => {
   if (content.length > maxLength) {
     return content.substring(0, maxLength) + "...더보기";
   }
   return content;
 };
-const fetchMessages = async () => {
-    try {
-        const response = await local.get(`/message/${roomId.value}`);
-        messages.value = response.data.data.messages;
-    } catch (error) {
-        console.error("Error fetching messages:", error);
-    }
-};
 
+const fetchMessages = async () => {
+  try {
+    const response = await local.get(`/message/${roomId.value}`);
+    messages.value = response.data.data.messages;
+  } catch (error) {
+    console.error("Error fetching messages:", error);
+  }
+};
+const goToDetail = (planListId) => {
+  router.push({ name: "detailPlan", params: { planListId: planListId } });
+};
 const fetchRooms = async () => {
   try {
     const response = await local.get('/message');
@@ -105,66 +137,113 @@ const fetchRooms = async () => {
   }
 };
 
+const sendMyPlan = (planListId) => {
+  local
+    .post(`/message/room/${roomId.value}`, {
+      content:"",
+      planlistId: planListId,
+    })
+    .then((response) => {
+      Swal.fire({
+        title: "쪽지를 보냈습니다!",
+        icon: "success",
+      });
+      closeModal();
+      fetchMessages();
+    })
+    .catch((error) => {
+      console.error("전송 중 오류 발생: ", error);
+    });
+};
+
+const openPlanList = async () => {
+  try {
+    const response = await local.get(`/planList`);
+    if (response.data.success) {
+      planList.value = response.data.data.planAllLists;
+      if (planList.value.length === 0) {
+        Swal.fire({
+          icon: "info",
+          title: "공유할 수 있는 계획이 없어요!",
+        });
+      } else {
+        showPlanListModal.value = true; // Set the modal visibility flag to true
+      }
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "여행계획 목록 조회에 실패했습니다.",
+      });
+    }
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      title: "여행계획 목록 조회에 실패했습니다.",
+    });
+  }
+};
+
 // 선택된 방의 nickname을 저장할 변수 추가
 const selectedRoomNickname = ref("");
 
 const selectRoom = (id) => {
-    roomId.value = id;
-    // 선택된 방의 nickname을 할당
-    const selectedRoom = rooms.value.find(room => room.roomId === id);
-    selectedRoomNickname.value = selectedRoom ? selectedRoom.nickname : "";
-    showDetail.value = true;
-    fetchMessages();
+  roomId.value = id;
+  // 선택된 방의 nickname을 할당
+  const selectedRoom = rooms.value.find(room => room.roomId === id);
+  selectedRoomNickname.value = selectedRoom ? selectedRoom.nickname : "";
+  showDetail.value = true;
+  fetchMessages();
 };
 
 const closeDetail = () => {
-    showDetail.value = false;
-    messages.value = [];
+  showDetail.value = false;
+  messages.value = [];
 };
 
 const openReplyModal = () => {
-    showModal.value = true;
+  showModal.value = true;
 };
 
 const closeModal = () => {
-    showModal.value = false;
-    message.value.content = "";
+  showModal.value = false;
+  message.value.content = "";
 };
 
 const confirmSend = () => {
-    if (message.value.content.trim() === "") {
-        contentErrMsg.value = "내용을 입력해주세요!";
-        return;
-    }
-    checkContentLength();
-    if(contentErrMsg.value){
-      return;
-    }
-    local
-        .post(`/message/room/${roomId.value}`, {
-            content: message.value.content,
-        })
-        .then((response) => {
-          Swal.fire({
-          title: "쪽지를 보냈습니다!",
-          icon: "success",
-        });
-            closeModal();
-            fetchMessages();
-        })
-        .catch((error) => {
-            console.error("전송 중 오류 발생: ", error);
-        });
+  if (message.value.content.trim() === "") {
+    contentErrMsg.value = "내용을 입력해주세요!";
+    return;
+  }
+  checkContentLength();
+  if (contentErrMsg.value) {
+    return;
+  }
+  local
+    .post(`/message/room/${roomId.value}`, {
+      content: message.value.content,
+    })
+    .then((response) => {
+      Swal.fire({
+        title: "쪽지를 보냈습니다!",
+        icon: "success",
+      });
+      closeModal();
+      fetchMessages();
+    })
+    .catch((error) => {
+      console.error("전송 중 오류 발생: ", error);
+    });
 };
 
 onMounted(() => {
-    fetchRooms();
+  fetchRooms();
 });
+
 // showModal 값이 변경될 때마다 message 초기화
 watch(showModal, (newVal) => {
-    if (!newVal) {
-        message.value.content = "";
-    }
+  if (!newVal) {
+    message.value.content = "";
+  }
 });
 
 // message.value.content가 변경될 때마다 currentContentLength 업데이트
@@ -175,13 +254,37 @@ watch(() => message.value.content, (newVal) => {
 </script>
 
 <style scoped>
-html, body {
-  height: 100%;
-  margin: 0;
+/* Styles for the modal and the rest of the page */
+
+.modal {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f0f2f5;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+  position: relative;
+  width: 500px;
+  max-width: 80%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 20px;
+  cursor: pointer;
 }
 
 .outer-container {
@@ -242,19 +345,15 @@ html, body {
   margin: 0 0 5px 0;
   font-size: 1.1em;
   top: 0;
-
   z-index: 1;
   padding: 15px;
 }
-
 
 .room-item p {
   margin: 0 0 5px 0;
   font-size: 0.9em;
   color: #555;
-  
   max-height: 200px; /* 내용 영역 최대 높이 설정 */
-
 }
 
 .message-room {
@@ -268,21 +367,24 @@ html, body {
   align-items: center;
   margin-bottom: 20px;
 }
+
 .left {
-    flex: 1;
+  flex: 1;
 }
 
 .right {
-    display: flex;
+  display: flex;
 }
+
 .h-close-button,
-.reply-button {
+.reply-button, .plan-button {
   padding: 5px 10px; /* 공통으로 사용할 패딩 값 */
   border-radius: 5px;
   border: none;
   cursor: pointer;
   margin-left: 5px;
 }
+
 .h-close-button {
   background-color: #b6cfea;
   color: #fff;
@@ -326,21 +428,24 @@ html, body {
   display: block;
   margin-top: 5px;
 }
-.reply-button {
+
+.reply-button, .plan-button {
   background-color: #7685b5;
   color: white;
+}
 
-}.header-image {
-    height: 1em; /* 이미지의 높이 설정 */
-    width: auto; /* 이미지의 너비를 자동으로 조정하여 비율 유지 */
-    margin-right: 5px; /* 이미지와 텍스트 사이의 간격 조정 */
+.header-image {
+  height: 1em; /* 이미지의 높이 설정 */
+  width: auto; /* 이미지의 너비를 자동으로 조정하여 비율 유지 */
+  margin-right: 5px; /* 이미지와 텍스트 사이의 간격 조정 */
 }
 
 .reply-button:hover {
   background-color: #5a6b96;
 }
 
-/* Modal styles */
+/* Styles for the message modal */
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -413,9 +518,9 @@ html, body {
   background-color: #5a6b96;
 }
 
-
 .error-msg {
   color: rgb(223, 123, 123);
   margin-bottom: 1em;
 }
+
 </style>
