@@ -43,6 +43,11 @@ const getComments = () => {
     });
 };
 
+const reload = () => {
+  getPost();
+  getComments();
+};
+
 function moveList() {
   router.push({ name: "postList" });
 }
@@ -144,9 +149,11 @@ function onDeleteArticle() {
 
         <div class="row justify-content-center">
           <div class="col-md-8">
-            <h3>댓글</h3>
-            <CommentForm :postId="postId" @commentSubmitted="getComments" />
-            <CommentList :comments="comments" :postId="postId" />
+            <h3>댓글 ({{ post.commentCnt }})</h3>
+            <CommentForm :postId="postId" @commentSubmitted="reload" />
+            <div class="comment-list-wrapper">
+              <CommentList :comments="comments" :postId="postId" @commentSubmitted="reload" />
+            </div>
           </div>
         </div>
       </div>
@@ -158,6 +165,7 @@ function onDeleteArticle() {
 .container {
   margin-top: 20px;
   width: 100%;
+  height: 80vh; /* 전체 높이를 부모 요소로 설정 */
 }
 
 .position-relative {
@@ -208,5 +216,15 @@ function onDeleteArticle() {
 
 .row.justify-content-center > div.col-md-8 {
   width: 100%;
+  height: 100%; /* 부모 요소가 전체 높이를 차지하도록 설정 */
+  display: flex;
+  flex-direction: column;
+}
+
+.comment-list-wrapper {
+  height: 50vh;
+  overflow-y: auto; /* 내용이 넘칠 경우 스크롤 표시 */
+  overscroll-behavior-y: contain;
+  scrollbar-width: none;
 }
 </style>
