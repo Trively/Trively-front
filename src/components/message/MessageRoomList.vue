@@ -57,7 +57,22 @@
         </div>
       </div>
     </div>
-
+    <div class="modal-overlay" v-if="showModal">
+            <div class="modal-container">
+                <div class="modal-header"> 
+                    <h2 class="modal-title">To. {{selectedRoomNickname}}님</h2>
+                    <button @click="closeModal" class="close-button">x</button>
+                </div>
+                <div class="modal-body">
+                  <textarea v-model="message.content" placeholder="메시지를 입력하세요"></textarea>
+                  <div class="char-count">{{ currentContentLength }}/255</div>
+                  <div v-if="contentErrMsg" class="error-msg">{{ contentErrMsg }}</div>
+              </div>
+                <div class="modal-footer">
+                    <button @click="confirmSend" class="btn">전송</button>
+                </div>
+            </div>
+        </div>
     <!-- Plan List Modal -->
     <div v-if="showPlanListModal" class="modal">
       <div class="modal-content">
