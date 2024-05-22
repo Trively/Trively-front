@@ -1,7 +1,12 @@
 <script setup>
 import { ref, watch } from "vue";
 import CommentForm from "@/components/comment/CommentForm.vue";
+import { localAxios } from "@/util/http-common";
+import Swal from "sweetalert2";
+import { useMemberStore } from "@/stores/member";
 
+const memberStore = useMemberStore();
+const local = localAxios();
 const props = defineProps({
   comments: {
     type: Array,
@@ -78,24 +83,66 @@ const refreshComments = (newComment) => {
 
   emit("commentSubmitted");
 };
+
+const deleteComment = (postId, commentId) => {
+  Swal.fire({
+    title: "댓글을 삭제하시겠습니까?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#0a3d91",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "삭제",
+    reverseButtons: true,
+  }).then((result) => {
+    if (result.isConfirmed) {
+      local
+        .delete(`/comment/${postId}/${commentId}`)
+        .then(() => {
+          Swal.fire({
+            title: "댓글이 삭제되었습니다.",
+            icon: "success",
+            confirmButtonColor: "#0a3d91",
+          });
+          emit("commentSubmitted");
+        })
+        .catch((error) => {
+          console.error("댓글 삭제 중 오류 발생:", error);
+        });
+    }
+  });
+};
 </script>
 
 <template>
-  <div>
-    <div v-for="comment in formattedComments" :key="comment.commentId" class="comment">
-      <div class="comment-content">
-        <div class="author-and-button">
-          <strong class="comment-author">{{ comment.nickname }}</strong>
-          <button
-            v-if="!showReplyForm || replyParentId !== comment.commentId"
-            class="reply-button btn btn-secondary"
-            @click="setReplyParent(comment.commentId)"
-          >
-            답글
-          </button>
+  <div class="comment-list">
+    <div v-for="comment in formattedComments" :key="comment.commentId">
+      <div class="comment">
+        <div class="comment-content">
+          <div class="author-and-button">
+            <div class="author-container">
+              <strong class="comment-author">{{ comment.nickname }}</strong>
+            </div>
+            <div class="buttons">
+              <button
+                v-if="!showReplyForm || replyParentId !== comment.commentId"
+                class="reply-button btn btn-outline-secondary"
+                @click="setReplyParent(comment.commentId)"
+              >
+                답글
+              </button>
+              <button
+                v-if="memberStore.userInfo && memberStore.userInfo.memberId === comment.memberId"
+                class="delete-button btn btn-outline-danger ms-1"
+                @click="deleteComment(comment.postId, comment.commentId)"
+              >
+                삭제
+              </button>
+            </div>
+          </div>
+
+          <p class="comment-text">{{ comment.content }}</p>
+          <div class="comment-time">{{ comment.createdAt }}</div>
         </div>
-        <p class="comment-text">{{ comment.content }}</p>
-        <div class="comment-time">{{ comment.createdAt }}</div>
         <div
           v-if="replyParentId === comment.commentId || (showReplyForm && replyParentId === null)"
           class="reply-form"
@@ -113,7 +160,13 @@ const refreshComments = (newComment) => {
           <div class="comment-content">
             <div class="author-and-button">
               <strong class="comment-author">{{ reply.nickname }}</strong>
-              <!-- <button class="reply-button" @click="setReplyParent(reply.commentId)">Reply</button> -->
+              <button
+                v-if="memberStore.userInfo && memberStore.userInfo.memberId === reply.memberId"
+                class="delete-button btn btn-outline-danger ms-1"
+                @click="deleteComment(reply.postId, reply.commentId)"
+              >
+                삭제
+              </button>
             </div>
             <p class="comment-text">{{ reply.content }}</p>
             <div class="comment-time">{{ reply.createdAt }}</div>
@@ -127,6 +180,7 @@ const refreshComments = (newComment) => {
 <style scoped>
 .comment {
   border: 1px solid #ddd;
+  background-color: white;
   padding: 10px;
   margin-bottom: 10px;
 }
