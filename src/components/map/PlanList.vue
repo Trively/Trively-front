@@ -6,6 +6,8 @@ import { localAxios } from "@/util/http-common";
 import Swal from "sweetalert2";
 import { useMemberStore } from "@/stores/member";
 import { useRouter } from "vue-router";
+import lockImage from "@/assets/lock.png";
+import unlockImage from "@/assets/unlock.png";
 
 const router = useRouter();
 const memberStore = useMemberStore();
@@ -35,6 +37,10 @@ const checkContentLength = () => {
     } else {
         contentErrMsg.value = ""; // 오류 메시지 초기화
     }
+};
+const toggleCheckbox = (element) => {
+  // 체크박스 값을 반전시킵니다.
+  element.open = !element.open;
 };
 
 const removeItem = (index) => {
@@ -254,11 +260,17 @@ onMounted(() => {
                 <div>{{ element.name }}</div>
                 <div>{{ element.address }} {{ element.addr2 }}</div>
                 <br />
-                <label for="travel-schedule">여행일정 공유</label>
-                <input type="checkbox" v-model="element.open" />
+                <div class="tooltip-container">
+                  <button @click="toggleCheckbox(element)" class="btn-checkbox">
+                  <img :src="element.open ? lockImage : unlockImage" alt="Checkbox Image" />
+                  <span class="tooltip">여행일정 공유</span>
+                </button>
                 <button @click="openRecommendationModal(element)" class="btn btn-sm btn-info btn-message">
                   <img src="@/assets/heart-message.png" width="35px" height="23px" alt="Send Message" class="message-icon" />
+                  <span class="tooltip">여행메이트 추천</span>
                 </button>
+                </div>
+                
                 <input type="date" class="form-control" v-model="element.date" />
                 <button @click="removeItem(index)" class="btn btn-sm btn-danger remove-button">x</button>
               </li>
@@ -474,5 +486,52 @@ onMounted(() => {
 .error-msg {
   color: rgb(223, 123, 123);
   margin-bottom: 1em;
+}
+.btn-checkbox {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 10px;
+}
+.tooltip {
+  visibility: hidden;
+  width: auto;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 10px;
+  position: absolute;
+  z-index: 1;
+  bottom: 27%;
+  left: 50%;
+  transform: translateX(-50%); /* 가운데 정렬 */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.tooltip-container {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+/* 마우스를 갖다 대었을 때 말풍선을 표시 */
+.btn-checkbox:hover .tooltip,
+.btn-message:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
 }
 </style>
