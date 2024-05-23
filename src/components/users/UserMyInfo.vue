@@ -60,7 +60,27 @@ const showNotificationEmail = () => {
     showMessageEmail.value = false; // 일정 시간이 지난 후 메시지 감춤
   }, 1500);
 };
+const signOut = async () => {
+  const result = await Swal.fire({
+    title: '정말 탈퇴하시겠습니까?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: '확인',
+    cancelButtonText: '취소',
+  });
 
+  if (result.isConfirmed) {
+    try {
+      await local.delete('/member/bye');
+      Swal.fire({
+        title: '탈퇴되었습니다.',
+        icon: 'success',
+      });
+    } catch (error) {
+      console.error('Error deleting user:', error);
+    }
+  }
+};
 onMounted(() => {
   fetchUserInfo();
 });
@@ -95,6 +115,7 @@ onMounted(() => {
         <input type="text" id="nickname" v-model="userData.nickname" class="form-control" />
       </div>
       <button type="submit" class="btn">저장</button>
+      <button type="button" @click="signOut" class="btn btn-bye">탈퇴</button>
     </form>
   </div>
 </template>
@@ -146,4 +167,18 @@ button:hover {
   background-color: #5a6b96;
   color: white;
 }
+.btn-bye{
+  margin-left: 20px;
+  background-color: rgb(215, 89, 89);
+}
+.btn-bye:hover{
+  background-color: #ff0000;
+  color: white;
+}
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
 </style>
