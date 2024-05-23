@@ -6,6 +6,7 @@ import { jwtDecode } from "jwt-decode"
 import { createPersistedState } from "pinia-plugin-persistedstate";
 import { userConfirm, findById, tokenRegeneration, logout } from "@/api/user"
 import { httpStatusCode } from "@/util/http-status"
+import Swal from "sweetalert2";
 
 export const useMemberStore = defineStore("memberStore", () => {
   const router = useRouter()
@@ -33,7 +34,10 @@ export const useMemberStore = defineStore("memberStore", () => {
         }
       },
       (error) => {
-        console.log("로그인 실패!!!!")
+        Swal.fire({
+          title: "아이디와 비밀번호를 확인해주세요.",
+          icon: "error",
+        });
         isLogin.value = false
         isLoginError.value = true
         isValidToken.value = false
