@@ -112,7 +112,7 @@ const savePlan = () => {
 
   const plans = planList.map((plan, index) => ({
     attractionId: plan.attractionId,
-    planDate: plan.date,
+    planDate: plan.date === "null" ? null : plan.date,
     orders: index,
     open: plan.open || false,
   }));
@@ -163,7 +163,7 @@ const savePlan = () => {
 
 const openRecommendationModal = (element) => {
   selectedElement.value = element;
-  if (!element.date) {
+  if (!element.date || element.date === "null") {
     Swal.fire({
       icon: "warning",
       title: "날짜를 입력하세요!",
