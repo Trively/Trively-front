@@ -28,22 +28,18 @@
           </div>
         </div>
         <div class="messages">
-          <div v-for="message in messages" :key="message.messageId" :class="{'message-sent': message.sender, 'message-received': !message.sender}">
-            <template v-if="message.content.length<1 && message.planlistId">
-              
+          <div v-for="message in messages" :key="message.messageId" :class="{'message-sent': message.sender, 'message-received': !message.sender, 'with-plan-list': message.planlistId}" @mouseover="toggleOverlay(true)" @mouseleave="toggleOverlay(false)">
+
+            <template v-if="message.planlistId">
               <!-- 여기에 여행계획 카드 넣기-->
               <div class="col-lg-10 plan-list-container">
-                <div class="plan-list">
-                  
-                  <button @click="goToDetail(message.planlistId, isShare)"> <img src="@/assets/share.png"/>
-                  </button>
+                <div class="plan-list" @click="goToDetail(message.planlistId, isShare)">
+                  <p><{{ message.title}}></p> 
+                  <p> 공유된 여행계획을 확인해보세요.</p>
                   <div class="image-container">
-                    
+                    <img :src="message.imageUrl" alt="Main Image" class="plan-image small-image"/>
+                    <div class="overlay" v-show="showOverlay">상세보기</div>
                   </div>
-      
-                    <div class="overlay">
-                      <span class="details">상세보기</span>
-                    </div>
                   
                 </div>
               </div>
@@ -52,27 +48,26 @@
               <p>{{ message.content }}</p>
               <small>{{ message.createdAt }}</small>
             </template>
-            
           </div>
         </div>
       </div>
     </div>
     <div class="modal-overlay" v-if="showModal">
-            <div class="modal-container">
-                <div class="modal-header"> 
-                    <h2 class="modal-title">To. {{selectedRoomNickname}}님</h2>
-                    <button @click="closeModal" class="close-button">x</button>
-                </div>
-                <div class="modal-body">
-                  <textarea v-model="message.content" placeholder="메시지를 입력하세요"></textarea>
-                  <div class="char-count">{{ currentContentLength }}/255</div>
-                  <div v-if="contentErrMsg" class="error-msg">{{ contentErrMsg }}</div>
-              </div>
-                <div class="modal-footer">
-                    <button @click="confirmSend" class="btn">전송</button>
-                </div>
-            </div>
+      <div class="modal-container">
+        <div class="modal-header">
+          <h2 class="modal-title">To. {{selectedRoomNickname}}님</h2>
+          <button @click="closeModal" class="close-button">x</button>
         </div>
+        <div class="modal-body">
+          <textarea v-model="message.content" placeholder="메시지를 입력하세요"></textarea>
+          <div class="char-count">{{ currentContentLength }}/255</div>
+          <div v-if="contentErrMsg" class="error-msg">{{ contentErrMsg }}</div>
+        </div>
+        <div class="modal-footer">
+          <button @click="confirmSend" class="btn">전송</button>
+        </div>
+      </div>
+    </div>
     <!-- Plan List Modal -->
     <div v-if="showPlanListModal" class="modal">
       <div class="modal-content">
@@ -95,6 +90,8 @@ import { ref, onMounted, watch } from 'vue';
 import { localAxios } from "@/util/http-common";
 import Swal from "sweetalert2";
 import { useRoute, useRouter } from "vue-router";
+import defaultLogo from "@/assets/logo.png"; // Import the default logo image
+const showOverlay = ref(false);
 const router = useRouter();
 const local = localAxios();
 const showDetail = ref(false);
@@ -107,16 +104,18 @@ const planList = ref([]);
 const message = ref({
   content: "",
 });
+const toggleOverlay = (value) => {
+  showOverlay.value = value;
+};
 const contentErrMsg = ref("");
 const MAX_CONTENT_LENGTH = 255;
 const currentContentLength = ref(0);
 
-// 텍스트 입력 길이 확인 및 오류 메시지 표시 함수
 const checkContentLength = () => {
   if (message.value.content.length > MAX_CONTENT_LENGTH) {
     contentErrMsg.value = `내용은 ${MAX_CONTENT_LENGTH}자를 넘을 수 없습니다.`;
   } else {
-    contentErrMsg.value = ""; // 오류 메시지 초기화
+    contentErrMsg.value = "";
   }
 };
 
@@ -130,20 +129,33 @@ const truncateRecentContent = (content, maxLength) => {
 const fetchMessages = async () => {
   try {
     const response = await local.get(`/message/${roomId.value}`);
-    messages.value = response.data.data.messages;
+    const messagesData = response.data.data.messages;
+    const messagesWithImagesAndTitles = await Promise.all(
+      messagesData.map(async (message) => {
+        if (message.planlistId) {
+          const { imageUrl, title } = await getFirstAttractionImage(message.planlistId);
+          return { ...message, imageUrl, title }; // title 추가
+        }
+        return message;
+      })
+    );
+    messages.value = messagesWithImagesAndTitles;
   } catch (error) {
     console.error("Error fetching messages:", error);
   }
 };
+
+
 const goToDetail = (planListId, isShare) => {
-  router.push({ name: "sharePlan", params: { planListId: planListId, isShare : true} });
+  router.push({ name: "sharePlan", params: { planListId: planListId, isShare: true } });
 };
+
 const fetchRooms = async () => {
   try {
     const response = await local.get('/message');
     const fetchedRooms = response.data.data.rooms.map(room => ({
       ...room,
-      recentContent: truncateRecentContent(room.recentContent, 50) // recentContent를 50자까지 자르고 "..."으로 대체
+      recentContent: truncateRecentContent(room.recentContent, 50)
     }));
     rooms.value = fetchedRooms;
   } catch (error) {
@@ -154,7 +166,7 @@ const fetchRooms = async () => {
 const sendMyPlan = (planListId) => {
   local
     .post(`/message/room/${roomId.value}`, {
-      content:"",
+      content: "",
       planlistId: planListId,
     })
     .then((response) => {
@@ -170,6 +182,25 @@ const sendMyPlan = (planListId) => {
     });
 };
 
+const getFirstAttractionImage = async (planListId) => {
+  try {
+    const response = await local.get(`/plan/${planListId}`);
+    if (response.data.success) {
+      const plan = response.data.data;
+      const firstAttraction = plan.planLists[0].attractionList;
+      const imageUrl = firstAttraction.image1 || defaultLogo;
+      return { imageUrl, title: plan.title }; // title 추가
+    } else {
+      console.error("Error fetching attraction image:", response.data.message);
+      return { imageUrl: defaultLogo, title: "Unknown" };
+    }
+  } catch (error) {
+    console.error("Error fetching attraction image:", error);
+    return { imageUrl: defaultLogo, title: "Unknown" };
+  }
+};
+
+
 const openPlanList = async () => {
   try {
     const response = await local.get(`/planList`);
@@ -181,7 +212,7 @@ const openPlanList = async () => {
           title: "공유할 수 있는 계획이 없어요!",
         });
       } else {
-        showPlanListModal.value = true; // Set the modal visibility flag to true
+        showPlanListModal.value = true;
       }
     } else {
       Swal.fire({
@@ -197,12 +228,10 @@ const openPlanList = async () => {
   }
 };
 
-// 선택된 방의 nickname을 저장할 변수 추가
 const selectedRoomNickname = ref("");
 
 const selectRoom = (id) => {
   roomId.value = id;
-  // 선택된 방의 nickname을 할당
   const selectedRoom = rooms.value.find(room => room.roomId === id);
   selectedRoomNickname.value = selectedRoom ? selectedRoom.nickname : "";
   showDetail.value = true;
@@ -225,11 +254,7 @@ const closeModal = () => {
 
 const confirmSend = () => {
   if (message.value.content.trim() === "") {
-    contentErrMsg.value = "내용을 입력해주세요!";
-    return;
-  }
-  checkContentLength();
-  if (contentErrMsg.value) {
+    contentErrMsg.value = "메시지 내용을 입력해주세요.";
     return;
   }
   local
@@ -253,21 +278,17 @@ onMounted(() => {
   fetchRooms();
 });
 
-// showModal 값이 변경될 때마다 message 초기화
-watch(showModal, (newVal) => {
-  if (!newVal) {
-    message.value.content = "";
+watch(
+  () => message.value.content,
+  (newValue) => {
+    currentContentLength.value = newValue.length;
+    checkContentLength();
   }
-});
-
-// message.value.content가 변경될 때마다 currentContentLength 업데이트
-watch(() => message.value.content, (newVal) => {
-  currentContentLength.value = newVal.length;
-  checkContentLength();
-});
+);
 </script>
 
 <style scoped>
+/* Styles for the modal and the rest of the page */
 /* Styles for the modal and the rest of the page */
 
 .modal {
@@ -348,7 +369,7 @@ watch(() => message.value.content, (newVal) => {
   transition: background-color 0.3s ease;
   background-color: #d5dcf5;
   display: flex;
-  flex-direction: column; /* 제목과 내용을 세로로 배치하기 위해 추가 */
+  flex-direction: column;
 }
 
 .room-item:hover {
@@ -358,23 +379,26 @@ watch(() => message.value.content, (newVal) => {
 .room-item h3 {
   margin: 0 0 5px 0;
   font-size: 1.1em;
-  top: 0;
-  z-index: 1;
-  padding: 15px;
 }
 
 .room-item p {
   margin: 0 0 5px 0;
   font-size: 0.9em;
   color: #555;
-  max-height: 200px; /* 내용 영역 최대 높이 설정 */
 }
 
 .message-room {
   width: 70%;
   padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  height: 80vh;
+  scrollbar-width: none;
 }
-
+.header-image {
+  width: 40px; /* Adjust the width as needed */
+  height: auto; /* Maintain aspect ratio */
+}
 .header {
   display: flex;
   justify-content: space-between;
@@ -391,15 +415,16 @@ watch(() => message.value.content, (newVal) => {
 }
 
 .h-close-button,
-.reply-button, .plan-button {
-  padding: 5px 10px; /* 공통으로 사용할 패딩 값 */
+.reply-button,
+.plan-button {
+  padding: 5px 10px;
   border-radius: 5px;
   border: none;
   cursor: pointer;
   margin-left: 5px;
 }
 
-.h-close-button {
+.h-close-button, .plan-button {
   background-color: #b6cfea;
   color: #fff;
 }
@@ -443,86 +468,81 @@ watch(() => message.value.content, (newVal) => {
   margin-top: 5px;
 }
 
-.reply-button, .plan-button {
+.reply-button{
   background-color: #7685b5;
-  color: white;
+  color: #fff;
 }
-
-.header-image {
-  height: 1em; /* 이미지의 높이 설정 */
-  width: auto; /* 이미지의 너비를 자동으로 조정하여 비율 유지 */
-  margin-right: 5px; /* 이미지와 텍스트 사이의 간격 조정 */
-}
-
-.reply-button:hover {
-  background-color: #5a6b96;
-}
-
-/* Styles for the message modal */
 
 .modal-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  z-index: 1000;
 }
 
 .modal-container {
   background: white;
-  padding: 2em;
+  padding: 20px;
   border-radius: 5px;
-  width: 500px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   position: relative;
+  width: 400px;
+  max-width: 90%;
 }
 
 .modal-header {
   display: flex;
-  justify-content: space-between; /* 헤더 내 요소들을 좌우 정렬 */
+  justify-content: space-between;
   align-items: center;
+  margin-bottom: 20px;
 }
 
 .modal-title {
   margin: 0;
-  font-size: 1.2em;
 }
 
 .close-button {
   background: none;
   border: none;
-  font-size: 1.2em;
+  font-size: 20px;
   cursor: pointer;
-}
-
-.modal-body {
-  margin-top: 1em;
-  text-align: center;
 }
 
 .modal-body textarea {
   width: 100%;
   height: 100px;
-  margin-bottom: 1em;
-  padding: 1em;
+  padding: 10px;
   border-radius: 5px;
   border: 1px solid #ccc;
-  box-sizing: border-box;
+  resize: none;
+}
+
+.char-count {
+  text-align: right;
+  font-size: 0.8em;
+  color: #999;
+  margin-top: 5px;
+}
+
+.error-msg {
+  color: rgb(255, 167, 167);
+  font-size: 0.9em;
+  margin-top: 5px;
 }
 
 .modal-footer {
-  display: flex;
-  justify-content: center; /* 푸터 내 요소들을 가운데 정렬 */
+  text-align: right;
 }
 
 .btn {
-  padding: 10px 20px;
   background-color: #7685b5;
   color: white;
+  padding: 10px 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -532,9 +552,98 @@ watch(() => message.value.content, (newVal) => {
   background-color: #5a6b96;
 }
 
-.error-msg {
-  color: rgb(223, 123, 123);
-  margin-bottom: 1em;
+.plan-list-container {
+  margin-bottom: 10px;
+  
 }
 
+
+.plan-image {
+  width: 200px;
+  height: 200px;
+  border-radius: 10px;
+}
+
+.image-container {
+  position: relative;
+  display: inline-block;
+}
+
+.image-container .overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 16px;
+  transform: translate(-50%, -50%);
+}
+
+.image-container:hover .overlay {
+  opacity: 1;
+  visibility: visible;
+}
+.message-sent.with-plan-list,
+.message-received.with-plan-list {
+  position: relative;
+}
+
+.message-sent.with-plan-list:hover,
+.message-received.with-plan-list:hover {
+  background-color: #f0f0f0; /* 배경 어둡게 설정 */
+}
+
+.message-sent.with-plan-list:hover .overlay,
+.message-received.with-plan-list:hover .overlay {
+  opacity: 1;
+  visibility: visible;
+}
+.overlay {
+  white-space: nowrap; /* 텍스트가 한 줄로만 표시되도록 설정 */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 16px;
+  transform: translate(-50%, -50%);
+}
+.custom-message-button {
+  padding: 5px 10px; /* 버튼의 패딩 크기를 줄여서 크기를 작게 만듭니다 */
+  font-size: 0.8em; /* 폰트 크기를 줄여서 버튼 크기를 더 작게 만듭니다 */
+  background-color: #7685b5;
+}
+.reply-button:hover{
+  background-color: #5a6b96; /* 호버 시 배경색 변경 */
+  color: white; /* 호버 시 텍스트색 변경 */
+}
+.h-close-button:hover{
+  background-color: #5a6b96; /* 호버 시 배경색 변경 */
+  color: white; /* 호버 시 텍스트색 변경 */
+}
+.plan-button:hover{
+  background-color: #5a6b96; /* 호버 시 배경색 변경 */
+  color: white; /* 호버 시 텍스트색 변경 */
+}
+.recommendation-item div {
+  font-size: 1.1em; /* 원하는 크기로 조절하세요 */
+}
 </style>
