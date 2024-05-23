@@ -45,7 +45,7 @@ function moveMap() {
                 <img style="width: 300px" src="@/assets/traveler.png" alt="" />
               </div>
               <button
-                class="btn btn-outline-dark mx-auto mt-3 btn-jittery btn-lg"
+                class="btn mx-auto mt-3 btn-lg"
                 style="background-color: #7685b5; color: white"
                 type="button"
                 id="index-search-btn"
@@ -79,10 +79,7 @@ body {
   vertical-align: -0.125em;
   fill: currentColor;
 }
-.btn-jittery {
-  -webkit-animation: jittery 4s infinite;
-  animation: jittery 4s infinite;
-}
+
 
 .animated-char {
   display: inline-block;
