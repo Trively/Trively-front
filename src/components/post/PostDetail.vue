@@ -108,7 +108,7 @@ const toggleScrap = () => {
               <p>
                 <!-- <span class="fw-bold">{{ post.userName }}</span> <br /> -->
                 <span class="text-secondary fw-light">
-                  {{ post.createdAt }} | 조회 : {{ post.hit }} 좋아요 : {{ post.likeCnt }}
+                  {{ post.createdAt }} | 조회 : {{ post.hit + 1 }} 좋아요 : {{ post.likeCnt }}
                 </span>
               </p>
             </div>
