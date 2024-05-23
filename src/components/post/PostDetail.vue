@@ -99,7 +99,6 @@ const toggleScrap = () => {
 
 <template>
   <div class="container">
-  
     <div class="row justify-content-center">
       <div class="col-lg-10 text-start">
         <div class="row my-2">
@@ -110,7 +109,6 @@ const toggleScrap = () => {
                 <!-- <span class="fw-bold">{{ post.userName }}</span> <br /> -->
                 <span class="text-secondary fw-light">
                   {{ post.createdAt }} | 조회 : {{ post.hit }} 좋아요 : {{ post.likeCnt }}
-                  
                 </span>
               </p>
             </div>
@@ -138,40 +136,52 @@ const toggleScrap = () => {
           </div>
         </div>
         <div class="col-12 text-start">
-  <div class="d-flex justify-content-between align-items-center">
-    <!-- 좋아요, 스크랩 버튼 -->
-    <div class="d-flex align-items-center">
-      <button class="btn btn-icon me-1" @click="toggleLike">
-        <img v-if="post.liked" src="@/assets/heart.png" alt="Like Button" class="like-img" />
-        <img v-else src="@/assets/unheart.png" alt="Un-Like Button" class="like-img" />
-      </button>
-      <button class="btn btn-icon me-1" @click="toggleScrap">
-        <img v-if="post.scraped" src="@/assets/star.png" alt="Scrap Button" class="scrap-img" />
-        <img v-else src="@/assets/unstar.png" alt="Un-Scrap Button" class="scrap-img" />
-      </button>
-    </div>
-    <!-- 글목록, 삭제, 수정 버튼 -->
-    <div class="d-flex">
-      <button type="button" class="btn btn-outline-secondary mb-3 me-1" @click="moveList">글목록</button>
-      <button
-        type="button"
-        class="btn btn-secondary mb-3 me-1"
-        @click="moveModify"
-        v-if="memberStore.userInfo && memberStore.userInfo.memberId === post.memberId"
-      >
-        글수정
-      </button>
-      <button
-        type="button"
-        class="btn btn-danger mb-3 me-1"
-        @click="onDeleteArticle"
-        v-if="memberStore.userInfo && memberStore.userInfo.memberId === post.memberId"
-      >
-        글삭제
-      </button>
-    </div>
-  </div>
-</div>
+          <div class="d-flex justify-content-between align-items-center">
+            <!-- 좋아요, 스크랩 버튼 -->
+            <div class="d-flex align-items-center">
+              <button class="btn btn-icon me-1" @click="toggleLike">
+                <img
+                  v-if="post.liked"
+                  src="@/assets/heart.png"
+                  alt="Like Button"
+                  class="like-img"
+                />
+                <img v-else src="@/assets/unheart.png" alt="Un-Like Button" class="like-img" />
+              </button>
+              <button class="btn btn-icon me-1" @click="toggleScrap">
+                <img
+                  v-if="post.scraped"
+                  src="@/assets/star.png"
+                  alt="Scrap Button"
+                  class="scrap-img"
+                />
+                <img v-else src="@/assets/unstar.png" alt="Un-Scrap Button" class="scrap-img" />
+              </button>
+            </div>
+            <!-- 글목록, 삭제, 수정 버튼 -->
+            <div class="d-flex">
+              <button type="button" class="btn btn-outline-secondary mb-3 me-1" @click="moveList">
+                글목록
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary mb-3 me-1"
+                @click="moveModify"
+                v-if="memberStore.userInfo && memberStore.userInfo.memberId === post.memberId"
+              >
+                글수정
+              </button>
+              <button
+                type="button"
+                class="btn btn-danger mb-3 me-1"
+                @click="onDeleteArticle"
+                v-if="memberStore.userInfo && memberStore.userInfo.memberId === post.memberId"
+              >
+                글삭제
+              </button>
+            </div>
+          </div>
+        </div>
         <div class="divider mt-3 mb-3"></div>
 
         <div class="row justify-content-center">
@@ -280,5 +290,10 @@ const toggleScrap = () => {
 .scrap-img {
   width: 50px; /* 스크랩 버튼 이미지 크기 */
   height: 50px; /* 스크랩 버튼 이미지 크기 */
+}
+
+.text-start {
+  background-color: white;
+  border-radius: 7px;
 }
 </style>

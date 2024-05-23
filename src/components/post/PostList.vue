@@ -1,21 +1,29 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import PostListItem from "@/components/post/item/PostListItem.vue";
 import BoardList from "@/components/post/BoardList.vue";
 import { localAxios } from "@/util/http-common";
 import { useMemberStore } from "@/stores/member"
+import { usePostPage } from "@/stores/postPage"; 
+import { storeToRefs } from "pinia";
+
 
 const local = localAxios();
 const memberStore = useMemberStore()
+const postPage = usePostPage()
 const router = useRouter();
 const posts = ref([]);
+const { pageIndex, totalCount, order, boardId, pageSize  } = storeToRefs(postPage);
 
 const listPosts = () => {
+  const url = `/post?order=${order.value}&boardId=${boardId.value}&pageIndex=${pageIndex.value}&pageSize=${pageSize.value}`;
+
   local
-    .get("/post")
+    .get(url)
     .then((response) => {
       posts.value = response.data.data.posts;
+      totalCount.value = response.data.data.totalCount;
     })
     .catch((error) => {
       console.error("요청 중 오류 발생: ", error);
@@ -34,6 +42,10 @@ const moveDetail = (postId) => {
   router.push({ name: "postDetail", params: { postId: postId.toString() } });
 };
 
+watch([pageIndex], () => {
+  listPosts()
+});
+
 onMounted(() => {
   listPosts();
 });
@@ -44,7 +56,7 @@ onMounted(() => {
     <div class="row">
       <!-- 좌측에 BoardList -->
       <div class="col-lg-3">
-        <BoardList @selectBoard="updatePosts" />
+        <BoardList @selectBoard="updatePosts" class="list-height"/>
       </div>
       <!-- 우측에 PostList -->
       <div class="col-lg-9">
@@ -82,6 +94,7 @@ onMounted(() => {
                 ></PostListItem>
               </tbody>
             </table>
+            <a-pagination v-model:current="pageIndex" :total="totalCount" show-less-items />
           </div>
         </div>
       </div>
@@ -94,5 +107,12 @@ onMounted(() => {
   border-radius: 15px; /* Adjust this value to make corners more or less rounded */
   padding: 15px; /* Optional: add some padding inside the element */
   background-color: #fff; /* Optional: change the background color */
+}
+
+.list-height{
+  height: 80vh;
+  overflow-y: auto;
+ overscroll-behavior-y: contain;
+ scrollbar-width: none;
 }
 </style>

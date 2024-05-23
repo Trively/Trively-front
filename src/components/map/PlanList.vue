@@ -264,7 +264,7 @@ onMounted(() => {
                 <br />
                 <div class="tooltip-container">
                   <button @click="toggleCheckbox(element)" class="btn-checkbox">
-                  <img :src="element.open ? lockImage : unlockImage" alt="Checkbox Image" />
+                  <img :src="!element.open ? lockImage : unlockImage" alt="Checkbox Image" />
                   <span class="tooltip">여행일정 공유</span>
                 </button>
                 <button @click="openRecommendationModal(element)" class="btn btn-sm btn-info btn-message">

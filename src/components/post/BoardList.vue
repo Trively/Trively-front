@@ -22,11 +22,15 @@
 <script setup>
 import { ref, onMounted, defineEmits } from "vue";
 import { localAxios } from "@/util/http-common";
+import { usePostPage } from "@/stores/postPage"; 
+import { storeToRefs } from "pinia";
 
+const postPage = usePostPage()
 const local = localAxios();
 const boards = ref([]);
 const selectedBoard = ref(); // 선택된 게시판을 추적하기 위한 변수
 const emit = defineEmits(["selectBoard"]);
+const { totalCount  } = storeToRefs(postPage);
 
 //카테고리 조회
 const ListBoards = () => {
@@ -49,6 +53,7 @@ const selectBoard = (board) => {
     .get("/post", { params })
     .then((response) => {
       emit("selectBoard", response.data.data.posts);
+      totalCount.value = response.data.data.totalCount;
     })
     .catch((error) => {
       console.error("검색 중 오류 발생:", error);
