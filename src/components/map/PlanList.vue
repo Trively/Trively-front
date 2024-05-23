@@ -8,6 +8,7 @@ import { useMemberStore } from "@/stores/member";
 import { useRoute, useRouter } from "vue-router";
 import lockImage from "@/assets/lock.png";
 import unlockImage from "@/assets/unlock.png";
+import groupImage from "@/assets/group.png"; // 추가된 부분
 
 const router = useRouter();
 const route = useRoute();
@@ -31,6 +32,7 @@ const showRecommendationModal = ref(false);
 const recommendationList = ref([]);
 const selectedElement = ref(null);
 const contentErrMsg = ref("");
+const messageRooms = ref([]); // 추가된 부분
 
 const checkContentLength = () => {
     if (message.value.content.length > MAX_CONTENT_LENGTH) {
@@ -176,8 +178,11 @@ const openRecommendationModal = (element) => {
 const fetchRecommendations = async (attractionId, date) => {
   try {
     const response = await local.get(`/plan/message?attractionId=${attractionId}&date=${date}`);
+    const messageResponse = await local.get(`/message`);
+    
     if (response.data.success) {
       recommendationList.value = response.data.data.members;
+      messageRooms.value = messageResponse.data.data.rooms; // 추가된 부분
       if (recommendationList.value.length === 0) {
         Swal.fire({
           icon: "info",
@@ -232,7 +237,9 @@ onMounted(() => {
         <div v-else>
           <div v-for="member in recommendationList" :key="member.memberId" class="recommendation-item">
             <img src="@/assets/user_icon.png" alt="avatar" class="avatar"/>
-            <div class="nickname">{{ member.nickname }}</div>
+            <div class="nickname">{{ member.nickname }}
+              <img v-if="messageRooms.some(room => room.nickname === member.nickname)" :src="groupImage" alt="Group Icon" class="group-icon"/> <!-- 추가된 부분 -->
+            </div>
             <button class="btn btn-sm btn-primary custom-message-button" @click="openReplyModal(member)">쪽지 보내기</button>
           </div>
         </div>
@@ -397,6 +404,11 @@ onMounted(() => {
   flex: 1; /* Adjust the flex property as needed */
   text-align: left;
 }
+.group-icon {
+  width: 15px;
+  height: 15px;
+  margin-left: 5px; /* 이미지와 닉네임 사이의 간격 조절 */
+}
 .custom-message-button {
   background-color: #7685b5; /* Change this to the desired color */
   border-color: #7685b5;
@@ -532,7 +544,8 @@ onMounted(() => {
 
 /* 마우스를 갖다 대었을 때 말풍선을 표시 */
 .btn-checkbox:hover .tooltip,
-.btn-message:hover .tooltip {
+.btn-message:hover .tooltip,
+.group-icon:hover .tooltip {
   visibility: visible;
   opacity: 1;
 }
