@@ -1,9 +1,12 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { localAxios } from '@/util/http-common';
+import { useRouter } from "vue-router"
 import Swal from "sweetalert2";
+import { useMemberStore } from "@/stores/member";
 const local = localAxios();
-
+const router = useRouter();
+const memberStore = useMemberStore();
 const userData = ref({
   id: '',
   password: '',
@@ -76,6 +79,8 @@ const signOut = async () => {
         title: '탈퇴되었습니다.',
         icon: 'success',
       });
+      memberStore.userLogout();
+      router.push({ name: "login" });
     } catch (error) {
       console.error('Error deleting user:', error);
     }
