@@ -142,7 +142,7 @@ const closeModal = () => {
 }
 .tooltip {
   visibility: hidden;
-  width: 150%;
+  width: 170%;
   background-color: #555;
   color: #fff;
   text-align: center;
